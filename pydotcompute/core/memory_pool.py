@@ -237,15 +237,18 @@ def configure_memory_pool(
     """
     Configure and optionally enable the global memory pool.
 
+    Note: MemoryPool is a singleton, so initial_size_mb only applies to the
+    first initialization. Use set_limit() to change the maximum size.
+
     Args:
-        initial_size_mb: Initial pool size in MB.
+        initial_size_mb: Initial pool size in MB (only on first init).
         max_size_mb: Maximum pool size in MB.
         enable: Whether to enable the pool immediately.
 
     Returns:
         Configured MemoryPool instance.
     """
-    pool = MemoryPool(initial_size_mb=initial_size_mb, max_size_mb=max_size_mb)
+    pool = MemoryPool()
     if max_size_mb is not None:
         pool.set_limit(max_size_mb)
     if enable:
