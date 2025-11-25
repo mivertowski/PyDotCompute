@@ -184,12 +184,12 @@ class FastMessageQueue(Generic[T]):
 
             # Conditionally serialize (for IPC) or store direct reference (zero-copy)
             if self._serialize and hasattr(message, "serialize"):
-                stored = message.serialize()
+                stored = message.serialize()  # type: ignore[assignment]
             else:
-                stored = message
+                stored = message  # type: ignore[assignment]
 
             # Append to band - O(1)
-            self._bands[band].append(stored)
+            self._bands[band].append(stored)  # type: ignore[arg-type]
             self._size += 1
 
             # Update stats
@@ -263,11 +263,11 @@ class FastMessageQueue(Generic[T]):
 
         # Conditionally serialize (for IPC) or store direct reference (zero-copy)
         if self._serialize and hasattr(message, "serialize"):
-            stored = message.serialize()
+            stored = message.serialize()  # type: ignore[assignment]
         else:
-            stored = message
+            stored = message  # type: ignore[assignment]
 
-        self._bands[band].append(stored)
+        self._bands[band].append(stored)  # type: ignore[arg-type]
         self._size += 1
         self._stats.total_enqueued += 1
 
@@ -316,11 +316,11 @@ class FastMessageQueue(Generic[T]):
 
             # Conditionally serialize (for IPC) or store direct reference (zero-copy)
             if self._serialize and hasattr(message, "serialize"):
-                stored = message.serialize()
+                stored = message.serialize()  # type: ignore[assignment]
             else:
-                stored = message
+                stored = message  # type: ignore[assignment]
 
-            self._bands[band].append(stored)
+            self._bands[band].append(stored)  # type: ignore[arg-type]
             self._size += 1
             count += 1
 

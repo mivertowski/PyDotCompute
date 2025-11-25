@@ -95,7 +95,7 @@ class UnifiedBuffer(Generic[T]):
     @property
     def dtype(self) -> np.dtype[T]:
         """Get the buffer dtype."""
-        return self._dtype
+        return self._dtype  # type: ignore[return-value]
 
     @property
     def size(self) -> int:

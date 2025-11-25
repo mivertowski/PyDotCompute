@@ -201,7 +201,7 @@ class ComputeOrchestrator:
             # Check if it's a Numba CUDA kernel
             if hasattr(kernel_func, "__cuda_kernel__") or hasattr(kernel_func, "forall"):
                 # Numba CUDA kernel launch
-                kernel_func[config.grid_size, config.block_size](*args, **kwargs)
+                kernel_func[config.grid_size, config.block_size](*args, **kwargs)  # type: ignore[index]
             else:
                 # Regular Python function (CPU or CuPy)
                 result = kernel_func(*args, **kwargs)

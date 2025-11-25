@@ -249,7 +249,7 @@ class CUDABackend(Backend):
             # Handle different kernel types
             if hasattr(kernel, "__cuda_kernel__") or str(type(kernel)).find("numba") != -1:
                 # Numba CUDA kernel
-                kernel[grid_size, block_size](*args, **kwargs)
+                kernel[grid_size, block_size](*args, **kwargs)  # type: ignore[index]
             elif callable(kernel):
                 # CuPy RawKernel or regular function
                 if hasattr(kernel, "kernel"):

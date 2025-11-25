@@ -113,7 +113,7 @@ class ArrayMessage(RingKernelMessage):
 
     def _to_dict_with_arrays(self) -> dict[str, Any]:
         """Convert message to dictionary, registering arrays."""
-        result = {}
+        result: dict[str, Any] = {}
         registry = get_buffer_registry()
         array_refs: dict[str, str] = {}  # field_name -> buffer_id hex
 
@@ -225,7 +225,9 @@ class ArrayMessage(RingKernelMessage):
         registry = get_buffer_registry()
         count = 0
         for _field_name, buffer_id_hex in self._array_buffer_ids.items():
-            buffer_id = UUID(hex=buffer_id_hex)
+            buffer_id = (
+                buffer_id_hex if isinstance(buffer_id_hex, UUID) else UUID(hex=buffer_id_hex)
+            )
             if registry.release(buffer_id):
                 count += 1
         self._array_buffer_ids.clear()

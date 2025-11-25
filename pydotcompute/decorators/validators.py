@@ -356,7 +356,7 @@ class RuntimeValidator:
         Returns:
             Validated configuration.
         """
-        validated = {}
+        validated: dict[str, Any] = {}
 
         if "queue_size" in config:
             validated["queue_size"] = validate_queue_size(config["queue_size"])

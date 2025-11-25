@@ -241,7 +241,7 @@ class RingKernelBuilder:
             raise ValueError("Handler function is required")
 
         # Apply decorator
-        decorated = ring_kernel(
+        decorated: Callable[..., Any] = ring_kernel(
             kernel_id=self._kernel_id,
             input_type=self._input_type,
             output_type=self._output_type,
@@ -250,7 +250,7 @@ class RingKernelBuilder:
             grid_size=self._grid_size,
             block_size=self._block_size,
             backpressure=self._backpressure,
-        )(self._handler)
+        )(self._handler)  # type: ignore[arg-type]
 
         return decorated
 
