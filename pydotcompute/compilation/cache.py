@@ -7,14 +7,13 @@ startup time and avoid recompilation.
 
 from __future__ import annotations
 
-import hashlib
+import contextlib
 import json
-import os
-import pickle
 import tempfile
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     pass
@@ -259,10 +258,8 @@ class KernelCache:
         if entry:
             # Delete file
             if entry.ptx_path and entry.ptx_path.exists():
-                try:
+                with contextlib.suppress(Exception):
                     entry.ptx_path.unlink()
-                except Exception:
-                    pass
             self._save_index()
             return True
 
@@ -294,10 +291,8 @@ class KernelCache:
 
         # Delete file
         if entry.ptx_path and entry.ptx_path.exists():
-            try:
+            with contextlib.suppress(Exception):
                 entry.ptx_path.unlink()
-            except Exception:
-                pass
 
         return True
 
@@ -320,10 +315,8 @@ class KernelCache:
 
         for entry in self._entries.values():
             if entry.ptx_path and entry.ptx_path.exists():
-                try:
+                with contextlib.suppress(Exception):
                     entry.ptx_path.unlink()
-                except Exception:
-                    pass
 
         self._entries.clear()
         self._save_index()
@@ -380,7 +373,5 @@ def warmup_kernels(kernels: list[Callable[..., Any]]) -> None:
 
     compiler = get_compiler()
     for kernel in kernels:
-        try:
+        with contextlib.suppress(Exception):
             compiler.compile(kernel)
-        except Exception:
-            pass

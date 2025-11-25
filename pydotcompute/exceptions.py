@@ -50,9 +50,7 @@ class KernelStateError(KernelError):
         self.kernel_id = kernel_id
         self.current_state = current_state
         self.operation = operation
-        super().__init__(
-            f"Cannot {operation} kernel '{kernel_id}' from state '{current_state}'"
-        )
+        super().__init__(f"Cannot {operation} kernel '{kernel_id}' from state '{current_state}'")
 
 
 class KernelAlreadyExistsError(KernelError):
@@ -75,9 +73,7 @@ class MessageSerializationError(MessageError):
     def __init__(self, message_type: type, cause: Exception) -> None:
         self.message_type = message_type
         self.cause = cause
-        super().__init__(
-            f"Failed to serialize message of type '{message_type.__name__}': {cause}"
-        )
+        super().__init__(f"Failed to serialize message of type '{message_type.__name__}': {cause}")
 
 
 class MessageDeserializationError(MessageError):
@@ -103,9 +99,7 @@ class QueueFullError(QueueError):
     def __init__(self, kernel_id: str, queue_size: int) -> None:
         self.kernel_id = kernel_id
         self.queue_size = queue_size
-        super().__init__(
-            f"Input queue for kernel '{kernel_id}' is full (size: {queue_size})"
-        )
+        super().__init__(f"Input queue for kernel '{kernel_id}' is full (size: {queue_size})")
 
 
 class QueueTimeoutError(QueueError):
@@ -130,9 +124,7 @@ class BufferNotAllocatedError(BufferError):
     """Raised when accessing a buffer that hasn't been allocated."""
 
     def __init__(self) -> None:
-        super().__init__(
-            "Buffer has not been allocated. Call allocate() first."
-        )
+        super().__init__("Buffer has not been allocated. Call allocate() first.")
 
 
 class BufferSyncError(BufferError):

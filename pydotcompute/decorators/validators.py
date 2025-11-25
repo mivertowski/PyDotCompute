@@ -9,8 +9,9 @@ from __future__ import annotations
 
 import functools
 import inspect
+from collections.abc import Callable
 from dataclasses import is_dataclass
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, get_args, get_origin
+from typing import TYPE_CHECKING, Any, TypeVar, get_args, get_origin
 
 from pydotcompute.exceptions import InvalidConfigurationError, TypeValidationError
 
@@ -139,8 +140,7 @@ def _check_type(value: Any, expected: type) -> bool:
         args = get_args(expected)
         if len(args) == 2:
             return all(
-                _check_type(k, args[0]) and _check_type(v, args[1])
-                for k, v in value.items()
+                _check_type(k, args[0]) and _check_type(v, args[1]) for k, v in value.items()
             )
         return True
 
@@ -200,9 +200,7 @@ def validate_grid_size(size: int | tuple[int, ...], name: str = "grid_size") -> 
 
     for dim in size:
         if not isinstance(dim, int) or dim < 1:
-            raise InvalidConfigurationError(
-                name, size, "all dimensions must be positive integers"
-            )
+            raise InvalidConfigurationError(name, size, "all dimensions must be positive integers")
 
     if len(size) > 3:
         raise InvalidConfigurationError(name, size, "maximum 3 dimensions")
@@ -238,9 +236,7 @@ def validate_block_size(
     total_threads = 1
     for dim in size:
         if not isinstance(dim, int) or dim < 1:
-            raise InvalidConfigurationError(
-                name, size, "all dimensions must be positive integers"
-            )
+            raise InvalidConfigurationError(name, size, "all dimensions must be positive integers")
         total_threads *= dim
 
     if total_threads > max_threads:

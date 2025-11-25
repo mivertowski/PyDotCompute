@@ -153,23 +153,22 @@ class MessageQueue(Generic[T]):
             self._total_enqueued += 1
             return True
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueueTimeoutError(self._kernel_id, timeout or 0, "send") from None
 
     async def _put_priority(
         self,
         message: T,
-        timeout: float | None,
+        _timeout: float | None,
     ) -> bool:
         """Put a message in the priority queue."""
         async with self._not_empty:
             if self.full:
                 if self._backpressure == BackpressureStrategy.REJECT:
                     raise QueueFullError(self._kernel_id, self._maxsize)
-                elif self._backpressure == BackpressureStrategy.DROP_OLDEST:
-                    if self._priority_heap:
-                        heapq.heappop(self._priority_heap)
-                        self._total_dropped += 1
+                elif self._backpressure == BackpressureStrategy.DROP_OLDEST and self._priority_heap:
+                    heapq.heappop(self._priority_heap)
+                    self._total_dropped += 1
 
             # Use negative priority for max-heap behavior (higher priority first)
             priority = -(getattr(message, "priority", 128))
@@ -218,7 +217,7 @@ class MessageQueue(Generic[T]):
             self._total_dequeued += 1
             return message
 
-        except asyncio.TimeoutError:
+        except TimeoutError:
             raise QueueTimeoutError(self._kernel_id, timeout or 0, "receive") from None
 
     async def _get_priority(self, timeout: float | None) -> T:
@@ -230,10 +229,8 @@ class MessageQueue(Generic[T]):
                     self._not_empty.wait_for(lambda: len(self._priority_heap) > 0),
                     timeout=timeout,
                 )
-            except asyncio.TimeoutError:
-                raise QueueTimeoutError(
-                    self._kernel_id, timeout or 0, "receive"
-                ) from None
+            except TimeoutError:
+                raise QueueTimeoutError(self._kernel_id, timeout or 0, "receive") from None
 
             item = heapq.heappop(self._priority_heap)
             self._total_dequeued += 1

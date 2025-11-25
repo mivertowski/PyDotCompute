@@ -13,6 +13,7 @@ import os as _os
 if not _os.environ.get("PYDOTCOMPUTE_NO_UVLOOP"):
     try:
         import uvloop as _uvloop
+
         _uvloop.install()
     except ImportError:
         pass
@@ -36,6 +37,13 @@ from pydotcompute.ring_kernels.buffer_registry import (
     register_buffer,
     release_buffer,
 )
+from pydotcompute.ring_kernels.cython_kernel import (
+    CythonKernelConfig,
+    CythonKernelContext,
+    CythonKernelState,
+    CythonRingKernel,
+    is_cython_kernel_available,
+)
 from pydotcompute.ring_kernels.fast_queue import (
     FastMessageQueue,
     PriorityBand,
@@ -53,13 +61,6 @@ from pydotcompute.ring_kernels.threaded_kernel import (
     ThreadedKernelPool,
     ThreadedKernelState,
     ThreadedRingKernel,
-)
-from pydotcompute.ring_kernels.cython_kernel import (
-    CythonKernelConfig,
-    CythonKernelContext,
-    CythonKernelState,
-    CythonRingKernel,
-    is_cython_kernel_available,
 )
 
 __all__ = [

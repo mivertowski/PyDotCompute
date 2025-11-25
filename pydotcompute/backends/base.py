@@ -6,10 +6,12 @@ Defines the abstract interface that all backends must implement.
 
 from __future__ import annotations
 
+import contextlib
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 import numpy as np
 
@@ -227,10 +229,8 @@ class BackendArray(Generic[T]):
     def __del__(self) -> None:
         """Free memory if owned."""
         if self._owns_data:
-            try:
+            with contextlib.suppress(Exception):
                 self._backend.free(self._data)
-            except Exception:
-                pass
 
     def __repr__(self) -> str:
         """String representation."""

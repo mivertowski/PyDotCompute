@@ -137,9 +137,9 @@ class UnifiedBuffer(Generic[T]):
                     import cupy as cp
 
                     pinned_mem = cp.cuda.alloc_pinned_memory(self.nbytes)
-                    self._host_data = np.frombuffer(
-                        pinned_mem, dtype=self._dtype
-                    ).reshape(self._shape)
+                    self._host_data = np.frombuffer(pinned_mem, dtype=self._dtype).reshape(
+                        self._shape
+                    )
                 except Exception:
                     # Fall back to regular allocation
                     self._host_data = np.empty(self._shape, dtype=self._dtype)

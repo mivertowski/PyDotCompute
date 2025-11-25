@@ -175,7 +175,7 @@ class FastMessageQueue(Generic[T]):
                         self._condition.wait_for(lambda: not self.full),
                         timeout=timeout,
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     raise QueueFullError(self._kernel_id, self._maxsize) from None
 
             # Get priority band - O(1)
@@ -228,10 +228,8 @@ class FastMessageQueue(Generic[T]):
                         self._condition.wait_for(lambda: not self.empty),
                         timeout=timeout,
                     )
-                except asyncio.TimeoutError:
-                    raise QueueTimeoutError(
-                        self._kernel_id, timeout or 0, "receive"
-                    ) from None
+                except TimeoutError:
+                    raise QueueTimeoutError(self._kernel_id, timeout or 0, "receive") from None
 
             # Find highest priority non-empty band - O(1) with 4 bands
             for band in self._bands:
@@ -458,7 +456,7 @@ class RingBuffer(Generic[T]):
                         self._condition.wait_for(lambda: not self.full),
                         timeout=timeout,
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     return False
 
             # Write to tail position
@@ -478,7 +476,7 @@ class RingBuffer(Generic[T]):
                         self._condition.wait_for(lambda: not self.empty),
                         timeout=timeout,
                     )
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     return None
 
             # Read from head position

@@ -10,23 +10,26 @@ This is the highest-performance kernel available in PyDotCompute.
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pydotcompute.exceptions import KernelStateError
 from pydotcompute.ring_kernels.message import RingKernelMessage
 
 # Try to import Cython queue, fall back to pure Python
 try:
-    from pydotcompute.ring_kernels._cython import FastSPSCQueue, CYTHON_AVAILABLE
+    from pydotcompute.ring_kernels._cython import CYTHON_AVAILABLE, FastSPSCQueue
 except ImportError:
     CYTHON_AVAILABLE = False
     FastSPSCQueue = None  # type: ignore[assignment, misc]
 
 if not CYTHON_AVAILABLE:
     # Fallback to pure Python SPSC
-    from pydotcompute.ring_kernels.sync_queue import SPSCQueue as FastSPSCQueue  # type: ignore[no-redef]
+    from pydotcompute.ring_kernels.sync_queue import (
+        SPSCQueue as FastSPSCQueue,  # type: ignore[no-redef]
+    )
 
 if TYPE_CHECKING:
     pass
@@ -58,9 +61,9 @@ class CythonKernelConfig:
     def __post_init__(self) -> None:
         """Validate configuration."""
         if self.input_queue_size < 1:
-            raise ValueError(f"input_queue_size must be >= 1")
+            raise ValueError("input_queue_size must be >= 1")
         if self.output_queue_size < 1:
-            raise ValueError(f"output_queue_size must be >= 1")
+            raise ValueError("output_queue_size must be >= 1")
 
 
 @dataclass
@@ -95,7 +98,7 @@ class CythonKernelContext(Generic[TIn, TOut]):
             timeout = 1.0  # Default timeout
 
         # Use Cython queue's wait method if available
-        if hasattr(self.input_queue, 'get_wait'):
+        if hasattr(self.input_queue, "get_wait"):
             return self.input_queue.get_wait(timeout)
         else:
             return self.input_queue.get(timeout=timeout)
@@ -118,7 +121,7 @@ class CythonKernelContext(Generic[TIn, TOut]):
         if timeout is None:
             return self.input_queue.put(message)
 
-        if hasattr(self.output_queue, 'put_wait'):
+        if hasattr(self.output_queue, "put_wait"):
             return self.output_queue.put_wait(message, timeout)
         else:
             return self.output_queue.put(message, timeout=timeout)
@@ -207,9 +210,7 @@ class CythonRingKernel(Generic[TIn, TOut]):
         """
         with self._state_lock:
             if self._state != CythonKernelState.CREATED:
-                raise KernelStateError(
-                    self.kernel_id, self._state.name, "start"
-                )
+                raise KernelStateError(self.kernel_id, self._state.name, "start")
 
             # Create Cython SPSC queues
             input_queue = FastSPSCQueue(self._config.input_queue_size)
@@ -270,14 +271,12 @@ class CythonRingKernel(Generic[TIn, TOut]):
             True if sent successfully.
         """
         if not self.is_running:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "send message"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "send message")
 
         if self._context:
             if timeout is None:
                 return self._context.input_queue.put(message)
-            if hasattr(self._context.input_queue, 'put_wait'):
+            if hasattr(self._context.input_queue, "put_wait"):
                 return self._context.input_queue.put_wait(message, timeout)
             return self._context.input_queue.put(message, timeout=timeout)
         return False
@@ -302,7 +301,7 @@ class CythonRingKernel(Generic[TIn, TOut]):
             if timeout is None:
                 # Non-blocking get
                 return self._context.output_queue.get()
-            if hasattr(self._context.output_queue, 'get_wait'):
+            if hasattr(self._context.output_queue, "get_wait"):
                 return self._context.output_queue.get_wait(timeout)
             return self._context.output_queue.get(timeout=timeout)
         return None

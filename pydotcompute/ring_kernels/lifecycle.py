@@ -8,10 +8,12 @@ CREATED → LAUNCHED → ACTIVE → DEACTIVATED → TERMINATED
 from __future__ import annotations
 
 import asyncio
+import contextlib
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pydotcompute.exceptions import KernelStateError
 from pydotcompute.ring_kernels.fast_queue import FastMessageQueue
@@ -177,9 +179,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not in CREATED state.
         """
         if self._state != KernelState.CREATED:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "launch"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "launch")
 
         # Create message queues - use FastMessageQueue for better performance
         # serialize=False enables zero-copy in-process message passing
@@ -223,9 +223,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not in LAUNCHED state.
         """
         if self._state != KernelState.LAUNCHED:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "activate"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "activate")
 
         if self._context is None:
             raise RuntimeError("Context not initialized")
@@ -249,9 +247,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not in ACTIVE state.
         """
         if self._state != KernelState.ACTIVE:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "deactivate"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "deactivate")
 
         if self._context:
             self._context._active_event.clear()
@@ -266,9 +262,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not in DEACTIVATED state.
         """
         if self._state != KernelState.DEACTIVATED:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "reactivate"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "reactivate")
 
         if self._context:
             self._context._active_event.set()
@@ -299,12 +293,10 @@ class RingKernel(Generic[TIn, TOut]):
         if self._task:
             try:
                 await asyncio.wait_for(self._task, timeout=timeout)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 self._task.cancel()
-                try:
+                with contextlib.suppress(asyncio.CancelledError):
                     await self._task
-                except asyncio.CancelledError:
-                    pass
 
         # Cleanup
         self._cleanup_resources()
@@ -350,9 +342,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not active.
         """
         if self._state not in (KernelState.ACTIVE, KernelState.DEACTIVATED):
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "send message"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "send message")
 
         if self._context:
             await self._context.input_queue.put(message, timeout=timeout)
@@ -371,9 +361,7 @@ class RingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not active.
         """
         if self._state not in (KernelState.ACTIVE, KernelState.DEACTIVATED):
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "receive message"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "receive message")
 
         if self._context:
             return await self._context.output_queue.get(timeout=timeout)
@@ -382,10 +370,7 @@ class RingKernel(Generic[TIn, TOut]):
 
     def __repr__(self) -> str:
         """String representation."""
-        return (
-            f"RingKernel(id={self.kernel_id!r}, "
-            f"state={self._state.name})"
-        )
+        return f"RingKernel(id={self.kernel_id!r}, state={self._state.name})"
 
 
 @asynccontextmanager

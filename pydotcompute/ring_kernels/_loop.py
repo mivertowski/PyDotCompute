@@ -12,6 +12,7 @@ Performance improvements:
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import sys
 from typing import TYPE_CHECKING
 
@@ -192,10 +193,8 @@ def create_optimized_loop() -> asyncio.AbstractEventLoop:
 
     # Install eager task factory if available
     if sys.version_info >= (3, 12):
-        try:
+        with contextlib.suppress(AttributeError):
             loop.set_task_factory(asyncio.eager_task_factory)  # type: ignore[attr-defined]
-        except AttributeError:
-            pass
 
     return loop
 

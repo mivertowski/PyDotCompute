@@ -11,9 +11,10 @@ of asyncio task scheduling is unacceptable.
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pydotcompute.exceptions import KernelStateError
 from pydotcompute.ring_kernels.message import RingKernelMessage
@@ -209,9 +210,7 @@ class ThreadedRingKernel(Generic[TIn, TOut]):
         """
         with self._state_lock:
             if self._state != ThreadedKernelState.CREATED:
-                raise KernelStateError(
-                    self.kernel_id, self._state.name, "start"
-                )
+                raise KernelStateError(self.kernel_id, self._state.name, "start")
 
             # Create queues
             if self._config.use_spsc:
@@ -293,9 +292,7 @@ class ThreadedRingKernel(Generic[TIn, TOut]):
             KernelStateError: If kernel is not running.
         """
         if not self.is_running:
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "send message"
-            )
+            raise KernelStateError(self.kernel_id, self._state.name, "send message")
 
         if self._context:
             if isinstance(self._context.input_queue, SPSCQueue):
@@ -316,13 +313,17 @@ class ThreadedRingKernel(Generic[TIn, TOut]):
         Raises:
             KernelStateError: If kernel is not running.
         """
-        if not self.is_running and self._context and (
-            isinstance(self._context.output_queue, SPSCQueue) and self._context.output_queue.empty
-            or isinstance(self._context.output_queue, SyncQueue) and self._context.output_queue.empty
-        ):
-            raise KernelStateError(
-                self.kernel_id, self._state.name, "receive message"
+        if (
+            not self.is_running
+            and self._context
+            and (
+                isinstance(self._context.output_queue, SPSCQueue)
+                and self._context.output_queue.empty
+                or isinstance(self._context.output_queue, SyncQueue)
+                and self._context.output_queue.empty
             )
+        ):
+            raise KernelStateError(self.kernel_id, self._state.name, "receive message")
 
         if self._context:
             if isinstance(self._context.output_queue, SPSCQueue):

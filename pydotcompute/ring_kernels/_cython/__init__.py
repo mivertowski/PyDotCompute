@@ -9,6 +9,7 @@ If the Cython extensions are not built, pure-Python fallbacks are used.
 
 try:
     from pydotcompute.ring_kernels._cython.fast_spsc import FastSPSCQueue, is_cython_available
+
     CYTHON_AVAILABLE = True
 except ImportError:
     CYTHON_AVAILABLE = False

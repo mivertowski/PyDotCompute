@@ -210,9 +210,7 @@ class GPUMonitor:
             util = pynvml.nvmlDeviceGetUtilizationRates(handle)
 
             # Get temperature
-            temp = pynvml.nvmlDeviceGetTemperature(
-                handle, pynvml.NVML_TEMPERATURE_GPU
-            )
+            temp = pynvml.nvmlDeviceGetTemperature(handle, pynvml.NVML_TEMPERATURE_GPU)
 
             # Get power info
             try:

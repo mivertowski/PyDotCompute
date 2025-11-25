@@ -8,9 +8,11 @@ kernel launches, and resource cleanup.
 from __future__ import annotations
 
 import asyncio
+import contextlib
+from collections.abc import Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
 from pydotcompute.core.accelerator import Accelerator, get_accelerator
@@ -108,10 +110,8 @@ class ComputeOrchestrator:
 
         # Synchronize all streams
         for stream in self._streams:
-            try:
+            with contextlib.suppress(Exception):
                 stream.synchronize()  # type: ignore
-            except Exception:
-                pass
 
         # Clear streams
         self._streams.clear()
@@ -297,10 +297,8 @@ class ComputeOrchestrator:
                 yield None
         finally:
             if stream is not None:
-                try:
+                with contextlib.suppress(Exception):
                     stream.synchronize()  # type: ignore
-                except Exception:
-                    pass
 
     def __repr__(self) -> str:
         """String representation."""

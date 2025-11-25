@@ -8,9 +8,9 @@ GPU actor kernels.
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from pydotcompute.ring_kernels.lifecycle import RingKernelConfig
 from pydotcompute.ring_kernels.runtime import register_ring_kernel
 
 if TYPE_CHECKING:

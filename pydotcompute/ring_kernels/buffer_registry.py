@@ -12,9 +12,8 @@ Performance impact:
 from __future__ import annotations
 
 import threading
-import weakref
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import UUID, uuid4
 
 import numpy as np
@@ -108,10 +107,7 @@ class BufferRegistry:
         buffer_id = uuid4()
 
         # Determine device
-        if HAS_CUPY and isinstance(array, cp.ndarray):
-            device = f"cuda:{array.device.id}"
-        else:
-            device = "cpu"
+        device = f"cuda:{array.device.id}" if HAS_CUPY and isinstance(array, cp.ndarray) else "cpu"
 
         # Calculate size
         size_bytes = array.nbytes

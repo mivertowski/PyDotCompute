@@ -11,7 +11,7 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from typing import Any
+    pass
 
 
 class DeviceType(Enum):
@@ -109,7 +109,9 @@ class Accelerator:
                     device = DeviceProperties(
                         device_id=i,
                         device_type=DeviceType.CUDA,
-                        name=props["name"].decode() if isinstance(props["name"], bytes) else props["name"],
+                        name=props["name"].decode()
+                        if isinstance(props["name"], bytes)
+                        else props["name"],
                         compute_capability=(props["major"], props["minor"]),
                         total_memory=props["totalGlobalMem"],
                         multiprocessor_count=props["multiProcessorCount"],
@@ -163,13 +165,17 @@ class Accelerator:
     def get_device(self, device_id: int) -> DeviceProperties:
         """Get properties for a specific device."""
         if device_id < 0 or device_id >= len(self._devices):
-            raise ValueError(f"Invalid device_id: {device_id}. Valid range: 0-{len(self._devices) - 1}")
+            raise ValueError(
+                f"Invalid device_id: {device_id}. Valid range: 0-{len(self._devices) - 1}"
+            )
         return self._devices[device_id]
 
     def set_device(self, device_id: int) -> None:
         """Set the current device."""
         if device_id < 0 or device_id >= len(self._devices):
-            raise ValueError(f"Invalid device_id: {device_id}. Valid range: 0-{len(self._devices) - 1}")
+            raise ValueError(
+                f"Invalid device_id: {device_id}. Valid range: 0-{len(self._devices) - 1}"
+            )
 
         self._current_device_id = device_id
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, TypeVar, get_type_hints
+from typing import TYPE_CHECKING, Any, TypeVar
 from uuid import UUID, uuid4
 
 import msgpack
@@ -59,10 +59,14 @@ def _uuid_decoder(obj: dict[str, Any]) -> Any:
         return UUID(obj["__uuid__"])
     # Decode numpy arrays
     if "__ndarray__" in obj:
-        return np.frombuffer(
-            obj["__ndarray__"],
-            dtype=obj["dtype"],
-        ).reshape(obj["shape"]).copy()  # copy to make writeable
+        return (
+            np.frombuffer(
+                obj["__ndarray__"],
+                dtype=obj["dtype"],
+            )
+            .reshape(obj["shape"])
+            .copy()
+        )  # copy to make writeable
     return obj
 
 

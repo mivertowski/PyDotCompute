@@ -230,7 +230,7 @@ def get_memory_pool() -> MemoryPool:
 
 
 def configure_memory_pool(
-    initial_size_mb: int = 0,
+    _initial_size_mb: int = 0,
     max_size_mb: int | None = None,
     enable: bool = True,
 ) -> MemoryPool:

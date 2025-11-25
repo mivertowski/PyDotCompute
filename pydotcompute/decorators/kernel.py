@@ -8,7 +8,8 @@ compute kernels.
 from __future__ import annotations
 
 import functools
-from typing import TYPE_CHECKING, Any, Callable, TypeVar, overload
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 if TYPE_CHECKING:
     pass
@@ -158,9 +159,7 @@ def gpu_kernel(
             return compiled  # type: ignore
 
         except ImportError as e:
-            raise RuntimeError(
-                f"CUDA not available for @gpu_kernel. Error: {e}"
-            ) from e
+            raise RuntimeError(f"CUDA not available for @gpu_kernel. Error: {e}") from e
 
     if func is not None:
         return decorator(func)
@@ -185,10 +184,7 @@ def _compile_kernel(func: Callable[..., Any], meta: dict[str, Any]) -> Callable[
         try:
             from numba import cuda
 
-            if cuda.is_available():
-                device = "cuda"
-            else:
-                device = "cpu"
+            device = "cuda" if cuda.is_available() else "cpu"
         except ImportError:
             device = "cpu"
 

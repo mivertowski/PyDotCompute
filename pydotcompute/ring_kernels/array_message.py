@@ -24,7 +24,6 @@ from pydotcompute.exceptions import (
     MessageSerializationError,
 )
 from pydotcompute.ring_kernels.buffer_registry import (
-    BufferHandle,
     get_buffer_registry,
 )
 from pydotcompute.ring_kernels.message import RingKernelMessage
@@ -162,7 +161,7 @@ class ArrayMessage(RingKernelMessage):
                     data[uuid_field] = UUID(bytes=val)
 
         # Retrieve arrays from registry
-        for field_name, buffer_id_hex in array_refs.items():
+        for field_name, _buffer_id_hex in array_refs.items():
             if field_name in data and isinstance(data[field_name], dict):
                 array_meta = data[field_name]
                 if "__array_ref__" in array_meta:
@@ -225,7 +224,7 @@ class ArrayMessage(RingKernelMessage):
         """
         registry = get_buffer_registry()
         count = 0
-        for field_name, buffer_id_hex in self._array_buffer_ids.items():
+        for _field_name, buffer_id_hex in self._array_buffer_ids.items():
             buffer_id = UUID(hex=buffer_id_hex)
             if registry.release(buffer_id):
                 count += 1

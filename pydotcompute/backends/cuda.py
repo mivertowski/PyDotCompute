@@ -7,7 +7,8 @@ Provides CUDA-based implementation using Numba and CuPy.
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 
@@ -249,7 +250,7 @@ class CUDABackend(Backend):
             if hasattr(kernel, "__cuda_kernel__") or str(type(kernel)).find("numba") != -1:
                 # Numba CUDA kernel
                 kernel[grid_size, block_size](*args, **kwargs)
-            elif hasattr(kernel, "__call__"):
+            elif callable(kernel):
                 # CuPy RawKernel or regular function
                 if hasattr(kernel, "kernel"):
                     # CuPy RawKernel

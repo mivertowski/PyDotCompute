@@ -13,7 +13,7 @@ __all__ = [
 
 # Conditionally export CUDA backend if available
 try:
-    from pydotcompute.backends.cuda import CUDABackend
+    from pydotcompute.backends.cuda import CUDABackend  # noqa: F401
 
     __all__.append("CUDABackend")
 except ImportError:

@@ -8,7 +8,8 @@ Useful for testing and development without GPU.
 from __future__ import annotations
 
 import time
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any, TypeVar
 
 import numpy as np
 
@@ -131,8 +132,8 @@ class CPUBackend(Backend):
     def execute_kernel(
         self,
         kernel: Callable[..., Any],
-        grid_size: tuple[int, ...],
-        block_size: tuple[int, ...],
+        _grid_size: tuple[int, ...],
+        _block_size: tuple[int, ...],
         *args: Any,
         **kwargs: Any,
     ) -> KernelExecutionResult:
@@ -157,7 +158,7 @@ class CPUBackend(Backend):
         try:
             # For CPU, we just call the function directly
             # GPU-style indexing is simulated
-            result = kernel(*args, **kwargs)
+            kernel(*args, **kwargs)
 
             end_time = time.perf_counter()
             return KernelExecutionResult(
@@ -176,7 +177,7 @@ class CPUBackend(Backend):
     def compile_kernel(
         self,
         func: Callable[..., Any],
-        signature: str | None = None,
+        _signature: str | None = None,
     ) -> Callable[..., Any]:
         """
         Compile a kernel for CPU execution.

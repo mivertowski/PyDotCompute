@@ -7,20 +7,19 @@ and resource coordination.
 
 from __future__ import annotations
 
-import asyncio
-import sys
+import contextlib
+from collections.abc import Callable
 from contextlib import asynccontextmanager
-from typing import TYPE_CHECKING, Any, Callable, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from pydotcompute.exceptions import (
     KernelAlreadyExistsError,
     KernelNotFoundError,
-    KernelStateError,
 )
 from pydotcompute.ring_kernels._loop import (
-    install_uvloop,
-    install_eager_task_factory,
     get_loop_info,
+    install_eager_task_factory,
+    install_uvloop,
 )
 from pydotcompute.ring_kernels.lifecycle import (
     KernelContext,
@@ -158,10 +157,8 @@ class RingKernelRuntime:
 
         # Terminate all kernels
         for kernel_id in list(self._kernels.keys()):
-            try:
+            with contextlib.suppress(Exception):
                 await self.terminate(kernel_id, timeout=timeout / max(len(self._kernels), 1))
-            except Exception:
-                pass
 
         self._kernels.clear()
         self._active = False
