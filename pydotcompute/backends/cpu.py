@@ -132,8 +132,8 @@ class CPUBackend(Backend):
     def execute_kernel(
         self,
         kernel: Callable[..., Any],
-        _grid_size: tuple[int, ...],
-        _block_size: tuple[int, ...],
+        grid_size: tuple[int, ...],  # noqa: ARG002
+        block_size: tuple[int, ...],  # noqa: ARG002
         *args: Any,
         **kwargs: Any,
     ) -> KernelExecutionResult:
@@ -177,7 +177,7 @@ class CPUBackend(Backend):
     def compile_kernel(
         self,
         func: Callable[..., Any],
-        _signature: str | None = None,
+        signature: str | None = None,  # noqa: ARG002
     ) -> Callable[..., Any]:
         """
         Compile a kernel for CPU execution.
