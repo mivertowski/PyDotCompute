@@ -14,6 +14,7 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 
 from pydotcompute.exceptions import KernelStateError
+from pydotcompute.ring_kernels.fast_queue import FastMessageQueue
 from pydotcompute.ring_kernels.message import RingKernelMessage
 from pydotcompute.ring_kernels.queue import MessageQueue
 
@@ -46,6 +47,7 @@ class RingKernelConfig:
     input_queue_size: int = 4096
     output_queue_size: int = 4096
     backpressure_strategy: str = "block"  # block, reject, drop_oldest
+    use_fast_queue: bool = True  # Use FastMessageQueue for better performance
 
     def __post_init__(self) -> None:
         """Validate configuration."""
@@ -68,8 +70,8 @@ class KernelContext(Generic[TIn, TOut]):
     """
 
     kernel_id: str
-    input_queue: MessageQueue[TIn]
-    output_queue: MessageQueue[TOut]
+    input_queue: MessageQueue[TIn] | FastMessageQueue[TIn]
+    output_queue: MessageQueue[TOut] | FastMessageQueue[TOut]
     _shutdown_event: asyncio.Event = field(default_factory=asyncio.Event)
     _active_event: asyncio.Event = field(default_factory=asyncio.Event)
 
@@ -179,15 +181,28 @@ class RingKernel(Generic[TIn, TOut]):
                 self.kernel_id, self._state.name, "launch"
             )
 
-        # Create message queues
-        input_queue: MessageQueue[TIn] = MessageQueue(
-            maxsize=self._config.input_queue_size,
-            kernel_id=self.kernel_id,
-        )
-        output_queue: MessageQueue[TOut] = MessageQueue(
-            maxsize=self._config.output_queue_size,
-            kernel_id=self.kernel_id,
-        )
+        # Create message queues - use FastMessageQueue for better performance
+        # serialize=False enables zero-copy in-process message passing
+        if self._config.use_fast_queue:
+            input_queue: MessageQueue[TIn] | FastMessageQueue[TIn] = FastMessageQueue(
+                maxsize=self._config.input_queue_size,
+                kernel_id=self.kernel_id,
+                serialize=False,  # Zero-copy: pass object references directly
+            )
+            output_queue: MessageQueue[TOut] | FastMessageQueue[TOut] = FastMessageQueue(
+                maxsize=self._config.output_queue_size,
+                kernel_id=self.kernel_id,
+                serialize=False,  # Zero-copy: pass object references directly
+            )
+        else:
+            input_queue = MessageQueue(
+                maxsize=self._config.input_queue_size,
+                kernel_id=self.kernel_id,
+            )
+            output_queue = MessageQueue(
+                maxsize=self._config.output_queue_size,
+                kernel_id=self.kernel_id,
+            )
 
         # Create context
         self._context = KernelContext(

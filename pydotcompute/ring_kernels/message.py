@@ -29,16 +29,40 @@ _message_registry: dict[str, type[RingKernelMessage]] = {}
 
 
 def _uuid_encoder(obj: Any) -> Any:
-    """Encode UUID objects for msgpack."""
+    """Encode UUID and numpy objects for msgpack."""
     if isinstance(obj, UUID):
-        return {"__uuid__": str(obj)}
+        # Use binary format: 16 bytes instead of 36-byte string
+        return {"__uuid_bin__": obj.bytes}
+    # Handle numpy arrays (for standard messages that include arrays)
+    if hasattr(obj, "tobytes") and hasattr(obj, "dtype") and hasattr(obj, "shape"):
+        # numpy/cupy array - serialize with data
+        return {
+            "__ndarray__": obj.tobytes(),
+            "dtype": str(obj.dtype),
+            "shape": list(obj.shape),
+        }
+    # Handle numpy scalar types
+    if hasattr(obj, "item"):
+        return obj.item()
     raise TypeError(f"Unknown type: {type(obj)}")
 
 
 def _uuid_decoder(obj: dict[str, Any]) -> Any:
-    """Decode UUID objects from msgpack."""
+    """Decode UUID and numpy objects from msgpack."""
+    import numpy as np
+
+    # Support new binary format
+    if "__uuid_bin__" in obj:
+        return UUID(bytes=obj["__uuid_bin__"])
+    # Backward compatibility with string format
     if "__uuid__" in obj:
         return UUID(obj["__uuid__"])
+    # Decode numpy arrays
+    if "__ndarray__" in obj:
+        return np.frombuffer(
+            obj["__ndarray__"],
+            dtype=obj["dtype"],
+        ).reshape(obj["shape"]).copy()  # copy to make writeable
     return obj
 
 
@@ -60,9 +84,27 @@ class RingKernelMessage:
         >>> restored = MyMessage.deserialize(data)
     """
 
+    # Class-level cache for field metadata to avoid reflection on every call
+    _cached_fields: tuple[dataclasses.Field[Any], ...] | None = None
+    _cached_field_names: frozenset[str] | None = None
+
     message_id: UUID = field(default_factory=uuid4)
     priority: int = field(default=128)  # 0-255, higher = more important
     correlation_id: UUID | None = field(default=None)
+
+    @classmethod
+    def _get_fields(cls) -> tuple[dataclasses.Field[Any], ...]:
+        """Get cached field metadata for this class."""
+        if cls._cached_fields is None:
+            cls._cached_fields = dataclasses.fields(cls)
+        return cls._cached_fields
+
+    @classmethod
+    def _get_field_names(cls) -> frozenset[str]:
+        """Get cached field names for this class."""
+        if cls._cached_field_names is None:
+            cls._cached_field_names = frozenset(f.name for f in cls._get_fields())
+        return cls._cached_field_names
 
     def serialize(self) -> bytes:
         """
@@ -113,24 +155,30 @@ class RingKernelMessage:
     def _to_dict(self) -> dict[str, Any]:
         """Convert message to dictionary."""
         result = {}
-        for f in dataclasses.fields(self):
+        for f in self._get_fields():
+            # Skip class-level cache fields
+            if f.name.startswith("_cached"):
+                continue
             value = getattr(self, f.name)
-            if isinstance(value, UUID):
-                value = str(value)
+            # UUIDs are handled by msgpack encoder with binary format
             result[f.name] = value
         return result
 
     @classmethod
     def _from_dict(cls: type[T], data: dict[str, Any]) -> T:
         """Create message from dictionary."""
-        # Convert string UUIDs back to UUID objects
-        if "message_id" in data and isinstance(data["message_id"], str):
-            data["message_id"] = UUID(data["message_id"])
-        if "correlation_id" in data and isinstance(data["correlation_id"], str):
-            data["correlation_id"] = UUID(data["correlation_id"])
+        # Convert string/bytes UUIDs back to UUID objects (backward compatibility)
+        for uuid_field in ("message_id", "correlation_id"):
+            if uuid_field in data:
+                val = data[uuid_field]
+                if isinstance(val, str):
+                    data[uuid_field] = UUID(val)
+                elif isinstance(val, bytes):
+                    data[uuid_field] = UUID(bytes=val)
+                # Already UUID - no conversion needed
 
-        # Get only fields that exist in this class
-        field_names = {f.name for f in dataclasses.fields(cls)}
+        # Get only fields that exist in this class (using cached field names)
+        field_names = cls._get_field_names()
         filtered_data = {k: v for k, v in data.items() if k in field_names}
 
         return cls(**filtered_data)
@@ -211,6 +259,16 @@ def message(cls: type[T] | None = None) -> type[T]:
 
             # Apply dataclass decorator
             cls = dataclass(cls)
+
+        # Add caching attributes for field metadata
+        cls._cached_fields = None  # type: ignore
+        cls._cached_field_names = None  # type: ignore
+
+        # Add caching methods
+        if not hasattr(cls, "_get_fields"):
+            cls._get_fields = classmethod(RingKernelMessage._get_fields.__func__)  # type: ignore
+        if not hasattr(cls, "_get_field_names"):
+            cls._get_field_names = classmethod(RingKernelMessage._get_field_names.__func__)  # type: ignore
 
         # Add serialization methods
         if not hasattr(cls, "serialize"):

@@ -2,8 +2,8 @@
 PAGERANK BENCHMARK REPORT
 ======================================================================
 
-Generated: 2025-11-25 10:28:33
-CUDA Available: False
+Generated: 2025-11-25 16:05:15
+CUDA Available: True
 
 Configuration:
   Damping factor: 0.85
@@ -18,95 +18,107 @@ PERFORMANCE SUMMARY
 --- 100 nodes, dense density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU NumPy            0.0023       5            2144.4K edges/s
-CPU Sparse           0.0040       5            1249.8K edges/s
-CPU Basic            0.0085       5            588.7K edges/s 
-GPU Actors           0.1081       5            46.3K edges/s  
+CPU Sparse           0.0068       5            740.1K edges/s 
+CPU Basic            0.0120       5            415.8K edges/s 
+GPU Batch            0.0215       5            232.8K edges/s 
+CPU NumPy            0.0291       5            172.1K edges/s 
+GPU Actors           0.1542       5            32.4K edges/s  
 
 --- 100 nodes, medium density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU NumPy            0.0007       8            1500.6K edges/s
-CPU Sparse           0.0013       8            758.5K edges/s 
-CPU Basic            0.0027       8            371.1K edges/s 
-GPU Actors           0.1052       8            9.5K edges/s   
+CPU Sparse           0.0025       8            393.5K edges/s 
+CPU Basic            0.0028       8            353.9K edges/s 
+CPU NumPy            0.0164       8            61.1K edges/s  
+GPU Batch            0.0202       8            49.4K edges/s  
+GPU Actors           0.1465       8            6.8K edges/s   
 
 --- 100 nodes, sparse density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU NumPy            0.0005       35           421.7K edges/s 
-CPU Sparse           0.0015       35           134.0K edges/s 
-CPU Basic            0.0032       35           62.6K edges/s  
-GPU Actors           0.1060       35           1.9K edges/s   
+CPU Sparse           0.0030       35           67.1K edges/s  
+CPU Basic            0.0043       35           46.8K edges/s  
+GPU Batch            0.0315       35           6.4K edges/s   
+CPU NumPy            0.1131       35           1.8K edges/s   
+GPU Actors           0.1563       35           1.3K edges/s   
 
 --- 500 nodes, dense density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU NumPy            0.0136       5            1837.1K edges/s
-CPU Sparse           0.0222       5            1127.7K edges/s
-CPU Basic            0.0394       5            634.9K edges/s 
-GPU Actors           0.1221       5            204.7K edges/s 
+CPU Sparse           0.0241       5            1038.3K edges/s
+GPU Batch            0.0340       5            735.1K edges/s 
+CPU Basic            0.0491       5            508.7K edges/s 
+CPU NumPy            0.0539       5            464.1K edges/s 
+GPU Actors           0.1784       5            140.2K edges/s 
 
 --- 500 nodes, medium density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0037       7            1340.6K edges/s
-CPU NumPy            0.0076       7            656.0K edges/s 
-CPU Basic            0.0132       7            379.2K edges/s 
-GPU Actors           0.1074       7            46.5K edges/s  
+CPU Sparse           0.0061       7            815.5K edges/s 
+CPU Basic            0.0153       7            326.0K edges/s 
+GPU Batch            0.0249       7            200.9K edges/s 
+CPU NumPy            0.0573       7            87.3K edges/s  
+GPU Actors           0.1596       7            31.3K edges/s  
 
 --- 500 nodes, sparse density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0022       28           445.3K edges/s 
-CPU NumPy            0.0089       28           112.3K edges/s 
-CPU Basic            0.0127       28           79.0K edges/s  
-GPU Actors           0.1054       28           9.5K edges/s   
+CPU Sparse           0.0046       28           215.2K edges/s 
+CPU Basic            0.0158       28           63.3K edges/s  
+GPU Batch            0.0580       28           17.3K edges/s  
+CPU NumPy            0.1467       28           6.8K edges/s   
+GPU Actors           0.1854       28           5.4K edges/s   
 
 --- 1000 nodes, dense density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0336       4            1486.9K edges/s
-CPU NumPy            0.0418       4            1195.3K edges/s
-CPU Basic            0.0692       4            722.9K edges/s 
-GPU Actors           0.1408       4            355.1K edges/s 
+GPU Batch            0.0644       4            776.9K edges/s 
+CPU Sparse           0.0686       4            729.2K edges/s 
+CPU NumPy            0.0874       4            572.2K edges/s 
+CPU Basic            0.1073       4            465.8K edges/s 
+GPU Actors           0.2145       4            233.1K edges/s 
 
 --- 1000 nodes, medium density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0066       7            1516.0K edges/s
-CPU Basic            0.0233       7            429.3K edges/s 
-CPU NumPy            0.0245       7            407.4K edges/s 
-GPU Actors           0.1123       7            89.0K edges/s  
+CPU Sparse           0.0103       7            967.6K edges/s 
+CPU Basic            0.0283       7            353.7K edges/s 
+GPU Batch            0.0301       7            332.5K edges/s 
+CPU NumPy            0.0673       7            148.5K edges/s 
+GPU Actors           0.1603       7            62.4K edges/s  
 
 --- 1000 nodes, sparse density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0030       25           676.9K edges/s 
-CPU Basic            0.0237       25           84.5K edges/s  
-CPU NumPy            0.0388       25           51.5K edges/s  
-GPU Actors           0.1080       25           18.5K edges/s  
+CPU Sparse           0.0052       25           383.4K edges/s 
+CPU Basic            0.0232       25           86.3K edges/s  
+GPU Batch            0.0390       25           51.3K edges/s  
+CPU NumPy            0.1533       25           13.0K edges/s  
+GPU Actors           0.1742       25           11.5K edges/s  
 
 --- 5000 nodes, dense density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.2042       4            1224.4K edges/s
-GPU Actors           0.3077       4            812.6K edges/s 
-CPU NumPy            0.9256       4            270.1K edges/s 
+GPU Batch            0.2005       4            1246.9K edges/s
+CPU Sparse           0.2556       4            977.9K edges/s 
+GPU Actors           0.3527       4            708.8K edges/s 
+CPU NumPy            0.8359       4            299.1K edges/s 
 
 --- 5000 nodes, medium density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0349       6            1434.2K edges/s
-GPU Actors           0.1418       6            352.7K edges/s 
-CPU NumPy            1.1267       6            44.4K edges/s  
+CPU Sparse           0.0483       6            1034.6K edges/s
+GPU Batch            0.0680       6            735.1K edges/s 
+GPU Actors           0.1895       6            263.8K edges/s 
+CPU NumPy            0.9068       6            55.1K edges/s  
 
 --- 5000 nodes, sparse density ---
 Implementation       Time (s)     Iterations   Throughput     
 ------------------------------------------------------------
-CPU Sparse           0.0083       21           1206.8K edges/s
-GPU Actors           0.1144       21           87.4K edges/s  
-CPU NumPy            3.5562       21           2.8K edges/s   
+CPU Sparse           0.0252       21           396.2K edges/s 
+GPU Batch            0.0943       21           106.0K edges/s 
+GPU Actors           0.1638       21           61.0K edges/s  
+CPU NumPy            2.3984       21           4.2K edges/s   
 
 ======================================================================
 SPEEDUP ANALYSIS (relative to CPU Sparse)
@@ -115,141 +127,161 @@ SPEEDUP ANALYSIS (relative to CPU Sparse)
 --- 100 nodes, dense density ---
 Implementation       Speedup     
 -----------------------------------
-CPU NumPy                  1.72x
 CPU Sparse                 1.00x
-CPU Basic                  0.47x
+CPU Basic                  0.56x
+GPU Batch                  0.31x
+CPU NumPy                  0.23x
 GPU Actors                 0.04x
 
 --- 100 nodes, medium density ---
 Implementation       Speedup     
 -----------------------------------
-CPU NumPy                  1.98x
 CPU Sparse                 1.00x
-CPU Basic                  0.49x
-GPU Actors                 0.01x
+CPU Basic                  0.90x
+CPU NumPy                  0.16x
+GPU Batch                  0.13x
+GPU Actors                 0.02x
 
 --- 100 nodes, sparse density ---
 Implementation       Speedup     
 -----------------------------------
-CPU NumPy                  3.15x
 CPU Sparse                 1.00x
-CPU Basic                  0.47x
-GPU Actors                 0.01x
+CPU Basic                  0.70x
+GPU Batch                  0.09x
+CPU NumPy                  0.03x
+GPU Actors                 0.02x
 
 --- 500 nodes, dense density ---
 Implementation       Speedup     
 -----------------------------------
-CPU NumPy                  1.63x
 CPU Sparse                 1.00x
-CPU Basic                  0.56x
-GPU Actors                 0.18x
+GPU Batch                  0.71x
+CPU Basic                  0.49x
+CPU NumPy                  0.45x
+GPU Actors                 0.13x
 
 --- 500 nodes, medium density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-CPU NumPy                  0.49x
-CPU Basic                  0.28x
-GPU Actors                 0.03x
+CPU Basic                  0.40x
+GPU Batch                  0.25x
+CPU NumPy                  0.11x
+GPU Actors                 0.04x
 
 --- 500 nodes, sparse density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-CPU NumPy                  0.25x
-CPU Basic                  0.18x
-GPU Actors                 0.02x
+CPU Basic                  0.29x
+GPU Batch                  0.08x
+CPU NumPy                  0.03x
+GPU Actors                 0.03x
 
 --- 1000 nodes, dense density ---
 Implementation       Speedup     
 -----------------------------------
+GPU Batch                  1.07x
 CPU Sparse                 1.00x
-CPU NumPy                  0.80x
-CPU Basic                  0.49x
-GPU Actors                 0.24x
+CPU NumPy                  0.78x
+CPU Basic                  0.64x
+GPU Actors                 0.32x
 
 --- 1000 nodes, medium density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-CPU Basic                  0.28x
-CPU NumPy                  0.27x
+CPU Basic                  0.37x
+GPU Batch                  0.34x
+CPU NumPy                  0.15x
 GPU Actors                 0.06x
 
 --- 1000 nodes, sparse density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-CPU Basic                  0.12x
-CPU NumPy                  0.08x
+CPU Basic                  0.22x
+GPU Batch                  0.13x
+CPU NumPy                  0.03x
 GPU Actors                 0.03x
 
 --- 5000 nodes, dense density ---
 Implementation       Speedup     
 -----------------------------------
+GPU Batch                  1.28x
 CPU Sparse                 1.00x
-GPU Actors                 0.66x
-CPU NumPy                  0.22x
+GPU Actors                 0.72x
+CPU NumPy                  0.31x
 
 --- 5000 nodes, medium density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-GPU Actors                 0.25x
-CPU NumPy                  0.03x
+GPU Batch                  0.71x
+GPU Actors                 0.26x
+CPU NumPy                  0.05x
 
 --- 5000 nodes, sparse density ---
 Implementation       Speedup     
 -----------------------------------
 CPU Sparse                 1.00x
-GPU Actors                 0.07x
-CPU NumPy                  0.00x
+GPU Batch                  0.27x
+GPU Actors                 0.15x
+CPU NumPy                  0.01x
 
 ======================================================================
 SCALING ANALYSIS
 ======================================================================
 
-CPU Basic:
-Size       Sparse Time     Medium Time     Dense Time     
--------------------------------------------------------
-100        0.0032         0.0027         0.0085        
-500        0.0127         0.0132         0.0394        
-1000       0.0237         0.0233         0.0692        
-5000       N/A            N/A            N/A           
-
 GPU Actors:
 Size       Sparse Time     Medium Time     Dense Time     
 -------------------------------------------------------
-100        0.1060         0.1052         0.1081        
-500        0.1054         0.1074         0.1221        
-1000       0.1080         0.1123         0.1408        
-5000       0.1144         0.1418         0.3077        
+100        0.1563         0.1465         0.1542        
+500        0.1854         0.1596         0.1784        
+1000       0.1742         0.1603         0.2145        
+5000       0.1638         0.1895         0.3527        
 
 CPU NumPy:
 Size       Sparse Time     Medium Time     Dense Time     
 -------------------------------------------------------
-100        0.0005         0.0007         0.0023        
-500        0.0089         0.0076         0.0136        
-1000       0.0388         0.0245         0.0418        
-5000       3.5562         1.1267         0.9256        
+100        0.1131         0.0164         0.0291        
+500        0.1467         0.0573         0.0539        
+1000       0.1533         0.0673         0.0874        
+5000       2.3984         0.9068         0.8359        
+
+GPU Batch:
+Size       Sparse Time     Medium Time     Dense Time     
+-------------------------------------------------------
+100        0.0315         0.0202         0.0215        
+500        0.0580         0.0249         0.0340        
+1000       0.0390         0.0301         0.0644        
+5000       0.0943         0.0680         0.2005        
 
 CPU Sparse:
 Size       Sparse Time     Medium Time     Dense Time     
 -------------------------------------------------------
-100        0.0015         0.0013         0.0040        
-500        0.0022         0.0037         0.0222        
-1000       0.0030         0.0066         0.0336        
-5000       0.0083         0.0349         0.2042        
+100        0.0030         0.0025         0.0068        
+500        0.0046         0.0061         0.0241        
+1000       0.0052         0.0103         0.0686        
+5000       0.0252         0.0483         0.2556        
+
+CPU Basic:
+Size       Sparse Time     Medium Time     Dense Time     
+-------------------------------------------------------
+100        0.0043         0.0028         0.0120        
+500        0.0158         0.0153         0.0491        
+1000       0.0232         0.0283         0.1073        
+5000       N/A            N/A            N/A           
 
 ======================================================================
 CONCLUSIONS
 ======================================================================
 
 - Fastest implementation for large graphs: CPU Sparse
-  (Best time: 0.0030s for 1000 nodes)
+  (Best time: 0.0052s for 1000 nodes)
 
-- GPU implementations are 1.44x faster on average
+- GPU implementations are 1.39x faster on average
 
-- Dense graphs take 0.50x longer than sparse graphs on average
+- Dense graphs take 0.72x longer than sparse graphs on average
 
 ======================================================================

@@ -1,6 +1,6 @@
 site_name: PyDotCompute
 site_description: Python port of DotCompute's Ring Kernel System - GPU-native actor model
-site_author: PyDotCompute Contributors
+site_author: Michael Ivertowski
 site_url: https://mivertowski.github.io/PyDotCompute/
 
 repo_name: mivertowski/PyDotCompute
@@ -84,6 +84,7 @@ nav:
     - articles/concepts/lifecycle.md
   - Guides:
     - articles/guides/building-actors.md
+    - articles/guides/performance-tiers.md
     - articles/guides/pipelines.md
     - articles/guides/gpu-optimization.md
     - articles/guides/testing.md
@@ -119,4 +120,4 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/mivertowski/PyDotCompute
 
-copyright: Copyright &copy; 2024 PyDotCompute Contributors
+copyright: Copyright &copy; 2025 Michael Ivertowski

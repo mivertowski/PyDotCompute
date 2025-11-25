@@ -77,6 +77,8 @@ class MessageQueue(Generic[T]):
         self._priority_heap: list[PriorityItem[T]] = []
         self._sequence = 0
         self._lock = asyncio.Lock()
+        # Condition for efficient wait/notify instead of polling
+        self._not_empty = asyncio.Condition(self._lock)
 
         # Statistics
         self._total_enqueued = 0
@@ -160,7 +162,7 @@ class MessageQueue(Generic[T]):
         timeout: float | None,
     ) -> bool:
         """Put a message in the priority queue."""
-        async with self._lock:
+        async with self._not_empty:
             if self.full:
                 if self._backpressure == BackpressureStrategy.REJECT:
                     raise QueueFullError(self._kernel_id, self._maxsize)
@@ -180,6 +182,8 @@ class MessageQueue(Generic[T]):
 
             heapq.heappush(self._priority_heap, item)
             self._total_enqueued += 1
+            # Notify any waiting consumers
+            self._not_empty.notify()
             return True
 
     async def get(
@@ -219,23 +223,21 @@ class MessageQueue(Generic[T]):
 
     async def _get_priority(self, timeout: float | None) -> T:
         """Get a message from the priority queue."""
-        start_time = asyncio.get_event_loop().time()
+        async with self._not_empty:
+            # Wait for a message to be available
+            try:
+                await asyncio.wait_for(
+                    self._not_empty.wait_for(lambda: len(self._priority_heap) > 0),
+                    timeout=timeout,
+                )
+            except asyncio.TimeoutError:
+                raise QueueTimeoutError(
+                    self._kernel_id, timeout or 0, "receive"
+                ) from None
 
-        while True:
-            async with self._lock:
-                if self._priority_heap:
-                    item = heapq.heappop(self._priority_heap)
-                    self._total_dequeued += 1
-                    return item.message
-
-            # Check timeout
-            if timeout is not None:
-                elapsed = asyncio.get_event_loop().time() - start_time
-                if elapsed >= timeout:
-                    raise QueueTimeoutError(self._kernel_id, timeout, "receive")
-
-            # Brief sleep before retry
-            await asyncio.sleep(0.001)
+            item = heapq.heappop(self._priority_heap)
+            self._total_dequeued += 1
+            return item.message
 
     def get_nowait(self) -> T | None:
         """

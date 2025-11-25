@@ -7,10 +7,10 @@ name = "pydotcompute"
 version = "0.1.0"
 description = "Python port of DotCompute's Ring Kernel System - GPU-native actor model with persistent kernels and message passing"
 readme = "README.md"
-license = "MIT"
+license = "Apache-2.0"
 requires-python = ">=3.11"
 authors = [
-    { name = "PyDotCompute Contributors" }
+    { name = "Michael Ivertowski" }
 ]
 keywords = [
     "gpu",
@@ -25,7 +25,6 @@ classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -45,6 +44,15 @@ cuda = [
     "numba>=0.59.0",
     "pynvml>=11.5.0",
 ]
+# Performance optimizations (uvloop for Linux/macOS)
+fast = [
+    "uvloop>=0.19.0; sys_platform != 'win32'",
+]
+# Cython extensions for maximum performance
+cython = [
+    "cython>=3.0.0",
+    "setuptools>=68.0.0",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
@@ -52,6 +60,7 @@ dev = [
     "mypy>=1.8.0",
     "ruff>=0.1.0",
     "hypothesis>=6.0.0",
+    "uvloop>=0.19.0; sys_platform != 'win32'",
 ]
 docs = [
     "mkdocs>=1.5.0",
@@ -93,6 +102,7 @@ module = [
     "numba.*",
     "pynvml.*",
     "msgpack.*",
+    "uvloop.*",
 ]
 ignore_missing_imports = true
 

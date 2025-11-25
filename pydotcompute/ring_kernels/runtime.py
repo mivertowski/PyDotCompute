@@ -8,6 +8,7 @@ and resource coordination.
 from __future__ import annotations
 
 import asyncio
+import sys
 from contextlib import asynccontextmanager
 from typing import TYPE_CHECKING, Any, Callable, TypeVar
 
@@ -15,6 +16,11 @@ from pydotcompute.exceptions import (
     KernelAlreadyExistsError,
     KernelNotFoundError,
     KernelStateError,
+)
+from pydotcompute.ring_kernels._loop import (
+    install_uvloop,
+    install_eager_task_factory,
+    get_loop_info,
 )
 from pydotcompute.ring_kernels.lifecycle import (
     KernelContext,
@@ -82,17 +88,35 @@ class RingKernelRuntime:
         ...     response = await runtime.receive("my_kernel")
     """
 
-    def __init__(self, *, enable_telemetry: bool = True) -> None:
+    def __init__(
+        self,
+        *,
+        enable_telemetry: bool = True,
+        use_uvloop: bool = True,
+        use_eager_tasks: bool = True,
+    ) -> None:
         """
         Initialize the runtime.
 
         Args:
             enable_telemetry: Whether to enable telemetry collection.
+            use_uvloop: Whether to install uvloop for faster event loop (20-40% improvement).
+                        Only works on Linux/macOS. No-op on Windows.
+            use_eager_tasks: Whether to enable eager task factory (Python 3.12+).
+                             Reduces task scheduling overhead by 20-30%.
         """
         self._kernels: dict[str, RingKernel[Any, Any]] = {}
         self._enable_telemetry = enable_telemetry
         self._telemetry = TelemetryCollector() if enable_telemetry else None
         self._active = False
+        self._use_uvloop = use_uvloop
+        self._use_eager_tasks = use_eager_tasks
+        self._uvloop_installed = False
+        self._eager_tasks_installed = False
+
+        # Install uvloop early (must be before event loop is created)
+        if self._use_uvloop:
+            self._uvloop_installed = install_uvloop()
 
     async def __aenter__(self) -> RingKernelRuntime:
         """Async context manager entry."""
@@ -109,7 +133,17 @@ class RingKernelRuntime:
         await self.shutdown()
 
     async def start(self) -> None:
-        """Start the runtime."""
+        """
+        Start the runtime.
+
+        This method:
+        1. Installs eager task factory if enabled and Python 3.12+
+        2. Sets the runtime to active state
+        """
+        # Install eager task factory (must be done after loop is running)
+        if self._use_eager_tasks:
+            self._eager_tasks_installed = install_eager_task_factory()
+
         self._active = True
 
     async def shutdown(self, timeout: float = 10.0) -> None:
@@ -434,10 +468,25 @@ class RingKernelRuntime:
         finally:
             await self.terminate(kernel_id)
 
+    def get_loop_info(self) -> dict[str, str | bool]:
+        """
+        Get information about the current event loop configuration.
+
+        Returns:
+            Dictionary containing loop class, uvloop/eager_tasks status, etc.
+        """
+        info = get_loop_info()
+        # Add runtime-specific info
+        info["runtime_uvloop_installed"] = self._uvloop_installed
+        info["runtime_eager_tasks_installed"] = self._eager_tasks_installed
+        return info
+
     def __repr__(self) -> str:
         """String representation."""
         return (
             f"RingKernelRuntime(active={self._active}, "
             f"kernels={len(self._kernels)}, "
-            f"telemetry={self._enable_telemetry})"
+            f"telemetry={self._enable_telemetry}, "
+            f"uvloop={self._uvloop_installed}, "
+            f"eager_tasks={self._eager_tasks_installed})"
         )

@@ -1,0 +1,363 @@
+{
+  "timestamp": "2025-11-25T16:42:24.387940",
+  "cuda_available": true,
+  "large_scale": [
+    {
+      "implementation": "CPU Sparse",
+      "num_nodes": 10000,
+      "num_edges": 50000,
+      "compute_time": 0.2459104470035527,
+      "throughput": 203326.0506385792,
+      "memory_mb": 3.9492664337158203
+    },
+    {
+      "implementation": "GPU Sparse",
+      "num_nodes": 10000,
+      "num_edges": 50000,
+      "compute_time": 1.02626925399818,
+      "throughput": 48720.15779992243,
+      "memory_mb": 0.0
+    },
+    {
+      "implementation": "CPU Sparse",
+      "num_nodes": 50000,
+      "num_edges": 250000,
+      "compute_time": 1.0669642749999184,
+      "throughput": 234309.62578388027,
+      "memory_mb": 19.23656177520752
+    },
+    {
+      "implementation": "GPU Sparse",
+      "num_nodes": 50000,
+      "num_edges": 250000,
+      "compute_time": 0.15067228600673843,
+      "throughput": 1659230.1519127372,
+      "memory_mb": 0.0
+    },
+    {
+      "implementation": "CPU Sparse",
+      "num_nodes": 100000,
+      "num_edges": 500000,
+      "compute_time": 2.218070828006603,
+      "throughput": 225421.11536147556,
+      "memory_mb": 38.62992572784424
+    },
+    {
+      "implementation": "GPU Sparse",
+      "num_nodes": 100000,
+      "num_edges": 500000,
+      "compute_time": 0.3250410839973483,
+      "throughput": 1538267.082582333,
+      "memory_mb": 0.0
+    },
+    {
+      "implementation": "CPU Sparse",
+      "num_nodes": 500000,
+      "num_edges": 2500000,
+      "compute_time": 12.178634620999219,
+      "throughput": 205277.52722701215,
+      "memory_mb": 195.53968715667725
+    },
+    {
+      "implementation": "GPU Sparse",
+      "num_nodes": 500000,
+      "num_edges": 2500000,
+      "compute_time": 1.943223989001126,
+      "throughput": 1286521.787580995,
+      "memory_mb": 0.0
+    },
+    {
+      "implementation": "CPU Sparse",
+      "num_nodes": 1000000,
+      "num_edges": 5000000,
+      "compute_time": 39.65279741999984,
+      "throughput": 126094.50846658627,
+      "memory_mb": 392.76845932006836
+    },
+    {
+      "implementation": "GPU Sparse",
+      "num_nodes": 1000000,
+      "num_edges": 5000000,
+      "compute_time": 4.250419460993726,
+      "throughput": 1176354.48592432,
+      "memory_mb": 0.0
+    }
+  ],
+  "streaming": [
+    {
+      "implementation": "Batch Processing",
+      "message_count": 100,
+      "payload_size": 10,
+      "total_time": 4.733000241685659e-05,
+      "throughput": 2112824.738931029,
+      "avg_latency_ms": 0.00047330002416856587
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 100,
+      "payload_size": 10,
+      "total_time": 0.00218435499118641,
+      "throughput": 45780.10460913499,
+      "avg_latency_ms": 0.021843549911864102
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 1000,
+      "payload_size": 10,
+      "total_time": 0.0001919189962791279,
+      "throughput": 5210531.627341336,
+      "avg_latency_ms": 0.0001919189962791279
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 1000,
+      "payload_size": 10,
+      "total_time": 0.013788677999400534,
+      "throughput": 72523.26873130805,
+      "avg_latency_ms": 0.013788677999400534
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 5000,
+      "payload_size": 10,
+      "total_time": 0.0006260919908527285,
+      "throughput": 7986046.895744618,
+      "avg_latency_ms": 0.0001252183981705457
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 5000,
+      "payload_size": 10,
+      "total_time": 0.06556917799753137,
+      "throughput": 76255.34058377621,
+      "avg_latency_ms": 0.013113835599506274
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 10000,
+      "payload_size": 10,
+      "total_time": 0.0010261029965477064,
+      "throughput": 9745610.36625437,
+      "avg_latency_ms": 0.00010261029965477065
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 10000,
+      "payload_size": 10,
+      "total_time": 0.1382974779990036,
+      "throughput": 72307.89848584258,
+      "avg_latency_ms": 0.013829747799900361
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 50000,
+      "payload_size": 10,
+      "total_time": 0.005605858998023905,
+      "throughput": 8919239.67720652,
+      "avg_latency_ms": 0.00011211717996047809
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 50000,
+      "payload_size": 10,
+      "total_time": 0.8238435480016051,
+      "throughput": 60691.13501135605,
+      "avg_latency_ms": 0.016476870960032104
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 100,
+      "payload_size": 100,
+      "total_time": 7.212899799924344e-05,
+      "throughput": 1386404.9518759279,
+      "avg_latency_ms": 0.0007212899799924344
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 100,
+      "payload_size": 100,
+      "total_time": 0.0016840580065036193,
+      "throughput": 59380.377406130094,
+      "avg_latency_ms": 0.016840580065036193
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 1000,
+      "payload_size": 100,
+      "total_time": 0.000615258002653718,
+      "throughput": 1625334.4055450247,
+      "avg_latency_ms": 0.000615258002653718
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 1000,
+      "payload_size": 100,
+      "total_time": 0.017594297998584807,
+      "throughput": 56836.595587981676,
+      "avg_latency_ms": 0.017594297998584807
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 5000,
+      "payload_size": 100,
+      "total_time": 0.0033139800070784986,
+      "throughput": 1508759.8565230465,
+      "avg_latency_ms": 0.0006627960014156998
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 5000,
+      "payload_size": 100,
+      "total_time": 0.08966355299344286,
+      "throughput": 55764.0181888136,
+      "avg_latency_ms": 0.017932710598688572
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 10000,
+      "payload_size": 100,
+      "total_time": 0.004893359000561759,
+      "throughput": 2043586.0109286888,
+      "avg_latency_ms": 0.0004893359000561759
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 10000,
+      "payload_size": 100,
+      "total_time": 0.1481965660059359,
+      "throughput": 67477.94682097733,
+      "avg_latency_ms": 0.01481965660059359
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 50000,
+      "payload_size": 100,
+      "total_time": 0.02310742999543436,
+      "throughput": 2163806.1874418384,
+      "avg_latency_ms": 0.0004621485999086872
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 50000,
+      "payload_size": 100,
+      "total_time": 0.8649526359949959,
+      "throughput": 57806.63347245903,
+      "avg_latency_ms": 0.01729905271989992
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 100,
+      "payload_size": 1000,
+      "total_time": 0.0003825839958153665,
+      "throughput": 261380.51014622053,
+      "avg_latency_ms": 0.0038258399581536646
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 100,
+      "payload_size": 1000,
+      "total_time": 0.0037240180099615827,
+      "throughput": 26852.716536951335,
+      "avg_latency_ms": 0.03724018009961583
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 1000,
+      "payload_size": 1000,
+      "total_time": 0.005155316001037136,
+      "throughput": 193974.53032924113,
+      "avg_latency_ms": 0.005155316001037136
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 1000,
+      "payload_size": 1000,
+      "total_time": 0.024254047995782457,
+      "throughput": 41230.23093604376,
+      "avg_latency_ms": 0.024254047995782457
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 5000,
+      "payload_size": 1000,
+      "total_time": 0.019828899996355176,
+      "throughput": 252157.2049341652,
+      "avg_latency_ms": 0.003965779999271036
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 5000,
+      "payload_size": 1000,
+      "total_time": 0.09388703199510928,
+      "throughput": 53255.49113386029,
+      "avg_latency_ms": 0.018777406399021857
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 10000,
+      "payload_size": 1000,
+      "total_time": 0.03561295599502046,
+      "throughput": 280796.6853804059,
+      "avg_latency_ms": 0.0035612955995020456
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 10000,
+      "payload_size": 1000,
+      "total_time": 0.18595555900537875,
+      "throughput": 53776.289633324435,
+      "avg_latency_ms": 0.018595555900537877
+    },
+    {
+      "implementation": "Batch Processing",
+      "message_count": 50000,
+      "payload_size": 1000,
+      "total_time": 0.18532864599546883,
+      "throughput": 269790.99605153577,
+      "avg_latency_ms": 0.0037065729199093765
+    },
+    {
+      "implementation": "GPU Actors",
+      "message_count": 50000,
+      "payload_size": 1000,
+      "total_time": 1.0237459710042458,
+      "throughput": 48840.241052135614,
+      "avg_latency_ms": 0.020474919420084916
+    }
+  ],
+  "latency": [
+    {
+      "implementation": "GPU Actors",
+      "p50_ms": 0.06297400977928191,
+      "p95_ms": 0.10260399722028524,
+      "p99_ms": 0.13067599502392113,
+      "mean_ms": 0.06955490802647546
+    }
+  ],
+  "concurrency": [
+    {
+      "num_actors": 1,
+      "total_messages": 1000,
+      "throughput": 61311.34172261954,
+      "speedup": 1.0
+    },
+    {
+      "num_actors": 2,
+      "total_messages": 2000,
+      "throughput": 65285.33558750848,
+      "speedup": 0.5324083094027513
+    },
+    {
+      "num_actors": 4,
+      "total_messages": 4000,
+      "throughput": 63816.58196104756,
+      "speedup": 0.26021523982366124
+    },
+    {
+      "num_actors": 8,
+      "total_messages": 8000,
+      "throughput": 68483.07932676193,
+      "speedup": 0.13962155574042945
+    }
+  ]
+}

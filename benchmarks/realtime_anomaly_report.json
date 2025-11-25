@@ -1,0 +1,248 @@
+{
+  "timestamp": "2025-11-25T16:15:13.139994",
+  "results": [
+    {
+      "implementation": "GPU Actors",
+      "total_points": 100000,
+      "batch_size": 100,
+      "num_batches": 1000,
+      "total_time": 1.8989443686635543,
+      "throughput": 52660.837068322515,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 100000,
+      "batch_size": 100,
+      "num_batches": 1000,
+      "total_time": 0.58198118233607,
+      "throughput": 171826.8614778925,
+      "transfer_overhead_pct": 27.054577457978823
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 100000,
+      "batch_size": 100,
+      "num_batches": 1000,
+      "total_time": 0.1276529933384154,
+      "throughput": 783373.7179581388,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 100000,
+      "batch_size": 500,
+      "num_batches": 200,
+      "total_time": 0.4321642806656503,
+      "throughput": 231393.4873237854,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 100000,
+      "batch_size": 500,
+      "num_batches": 200,
+      "total_time": 0.16012448633652335,
+      "throughput": 624514.1032948354,
+      "transfer_overhead_pct": 19.655383840863788
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 100000,
+      "batch_size": 500,
+      "num_batches": 200,
+      "total_time": 0.1212762236633959,
+      "throughput": 824563.9333028015,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 100000,
+      "batch_size": 1000,
+      "num_batches": 100,
+      "total_time": 0.19814898933206374,
+      "throughput": 504670.7547542276,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 100000,
+      "batch_size": 1000,
+      "num_batches": 100,
+      "total_time": 0.11694135765719693,
+      "throughput": 855129.459785656,
+      "transfer_overhead_pct": 16.929473965009993
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 100000,
+      "batch_size": 1000,
+      "num_batches": 100,
+      "total_time": 0.12088609433946355,
+      "throughput": 827225.0050463808,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 500000,
+      "batch_size": 100,
+      "num_batches": 5000,
+      "total_time": 8.990474992999225,
+      "throughput": 55614.41418716408,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 500000,
+      "batch_size": 100,
+      "num_batches": 5000,
+      "total_time": 3.0091858686646447,
+      "throughput": 166157.89845573076,
+      "transfer_overhead_pct": 27.829987520278088
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 500000,
+      "batch_size": 100,
+      "num_batches": 5000,
+      "total_time": 0.6636358023339805,
+      "throughput": 753425.2947799382,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 500000,
+      "batch_size": 500,
+      "num_batches": 1000,
+      "total_time": 2.110118003663956,
+      "throughput": 236953.57280105306,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 500000,
+      "batch_size": 500,
+      "num_batches": 1000,
+      "total_time": 0.944677042668142,
+      "throughput": 529281.413029581,
+      "transfer_overhead_pct": 21.0998435835869
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 500000,
+      "batch_size": 500,
+      "num_batches": 1000,
+      "total_time": 0.6226179946679622,
+      "throughput": 803060.6315300066,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 500000,
+      "batch_size": 1000,
+      "num_batches": 500,
+      "total_time": 1.295539926669638,
+      "throughput": 385939.4756634928,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 500000,
+      "batch_size": 1000,
+      "num_batches": 500,
+      "total_time": 0.5807892860029824,
+      "throughput": 860897.42364399,
+      "transfer_overhead_pct": 17.04872906166899
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 500000,
+      "batch_size": 1000,
+      "num_batches": 500,
+      "total_time": 0.6425999096682062,
+      "throughput": 778089.1227609495,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 1000000,
+      "batch_size": 100,
+      "num_batches": 10000,
+      "total_time": 18.52035314333625,
+      "throughput": 53994.65076397891,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 1000000,
+      "batch_size": 100,
+      "num_batches": 10000,
+      "total_time": 6.12002218766429,
+      "throughput": 163398.10042120953,
+      "transfer_overhead_pct": 27.82954483334154
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 1000000,
+      "batch_size": 100,
+      "num_batches": 10000,
+      "total_time": 1.267458566998054,
+      "throughput": 788980.4258994253,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 1000000,
+      "batch_size": 500,
+      "num_batches": 2000,
+      "total_time": 3.698275788333073,
+      "throughput": 270396.2757874071,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 1000000,
+      "batch_size": 500,
+      "num_batches": 2000,
+      "total_time": 1.5445994423304608,
+      "throughput": 647417.0406867557,
+      "transfer_overhead_pct": 20.583804772011057
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 1000000,
+      "batch_size": 500,
+      "num_batches": 2000,
+      "total_time": 1.2467967966658762,
+      "throughput": 802055.3170124849,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "GPU Actors",
+      "total_points": 1000000,
+      "batch_size": 1000,
+      "num_batches": 1000,
+      "total_time": 1.939920336662908,
+      "throughput": 515485.08518665313,
+      "transfer_overhead_pct": 0.0
+    },
+    {
+      "implementation": "Stateless Batch",
+      "total_points": 1000000,
+      "batch_size": 1000,
+      "num_batches": 1000,
+      "total_time": 1.0571087146672653,
+      "throughput": 945976.4980887128,
+      "transfer_overhead_pct": 16.1169395854251
+    },
+    {
+      "implementation": "CPU Only",
+      "total_points": 1000000,
+      "batch_size": 1000,
+      "num_batches": 1000,
+      "total_time": 1.1822240020022339,
+      "throughput": 845863.3882465452,
+      "transfer_overhead_pct": 0.0
+    }
+  ]
+}

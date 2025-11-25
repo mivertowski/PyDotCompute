@@ -41,7 +41,7 @@ class BenchmarkConfig:
     """Configuration for benchmark runs."""
 
     # Graph sizes to test
-    graph_sizes: list[int] = field(default_factory=lambda: [100, 500, 1000, 5000])
+    graph_sizes: list[int] = field(default_factory=lambda: [100, 500, 1000, 5000, 10000, 100000, 1000000])
 
     # Edges per node for different densities
     density_levels: dict[str, float] = field(default_factory=lambda: {
@@ -415,7 +415,7 @@ async def pagerank_gpu_actors(
         priority: int = 128
         correlation_id: UUID | None = None
 
-    # Define the actor
+    # Define the actor with proper GPU kernel usage
     @ring_kernel(
         kernel_id="pr_benchmark",
         input_type=PRRequest,
@@ -423,6 +423,8 @@ async def pagerank_gpu_actors(
         queue_size=32,
     )
     async def pr_actor(ctx: KernelContext) -> None:
+        import cupy as cp
+
         while not ctx.should_terminate:
             if not ctx.is_active:
                 await ctx.wait_active()
@@ -431,18 +433,63 @@ async def pagerank_gpu_actors(
             try:
                 request = await ctx.receive(timeout=0.1)
 
-                # Use sparse CPU implementation for actors
-                # (In real GPU actors, this would use CUDA kernels)
-                ranks, converged, iters, diff = pagerank_cpu_sparse(
-                    request.edges,
-                    request.num_nodes,
-                    request.damping,
-                    request.max_iterations,
-                    request.tolerance,
+                # Build sparse transition matrix on GPU
+                edges = request.edges
+                num_nodes = request.num_nodes
+                damping = request.damping
+                max_iterations = request.max_iterations
+                tolerance = request.tolerance
+
+                # Compute out-degree
+                out_degree = np.zeros(num_nodes, dtype=np.float64)
+                for src, _ in edges:
+                    out_degree[src] += 1
+
+                # Build sparse matrix data
+                rows = []
+                cols = []
+                data = []
+
+                for src, dst in edges:
+                    if out_degree[src] > 0:
+                        rows.append(dst)
+                        cols.append(src)
+                        data.append(1.0 / out_degree[src])
+
+                # Transfer to GPU and create sparse matrix
+                transition = cp.sparse.csr_matrix(
+                    (cp.array(data, dtype=cp.float64),
+                     (cp.array(rows, dtype=cp.int32), cp.array(cols, dtype=cp.int32))),
+                    shape=(num_nodes, num_nodes),
                 )
 
+                # Initialize PageRank on GPU
+                ranks = cp.ones(num_nodes, dtype=cp.float64) / num_nodes
+                teleport = cp.ones(num_nodes, dtype=cp.float64) * (1 - damping) / num_nodes
+
+                # Power iteration on GPU
+                converged = False
+                iters = max_iterations
+                diff = 0.0
+
+                for iteration in range(max_iterations):
+                    new_ranks = teleport + damping * transition @ ranks
+                    diff = float(cp.abs(new_ranks - ranks).max())
+
+                    if diff < tolerance:
+                        converged = True
+                        iters = iteration + 1
+                        ranks = new_ranks
+                        break
+
+                    ranks = new_ranks
+
+                # Synchronize and transfer back to CPU
+                cp.cuda.Stream.null.synchronize()
+                ranks_cpu = cp.asnumpy(ranks)
+
                 response = PRResponse(
-                    ranks=ranks.tolist(),
+                    ranks=ranks_cpu.tolist(),
                     converged=converged,
                     iterations=iters,
                     final_diff=diff,

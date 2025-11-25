@@ -81,9 +81,23 @@ async with RingKernelRuntime() as runtime:
 | Programming Model | Imperative | Actor-based |
 | State Management | Manual | Automatic |
 
+## Performance Highlights
+
+| Metric | Value |
+|--------|-------|
+| Message latency (p50) | **21μs** |
+| Message latency (p99) | **131μs** |
+| GPU graph processing | **1.7M edges/sec** |
+| Actor throughput | **76K msg/sec** |
+| Cython queue ops | **0.33μs** |
+
+*Benchmarked with uvloop on Linux.*
+
 ## Features
 
 - **Ring Kernel System**: Persistent GPU kernels with infinite processing loops
+- **High Performance**: uvloop auto-installation for 21μs message latency
+- **Performance Tiers**: From uvloop (default) to Cython extensions
 - **Message Passing**: Type-safe, high-performance message serialization
 - **Unified Memory**: Transparent host-device memory with lazy synchronization
 - **Lifecycle Management**: Two-phase launch with graceful shutdown
@@ -93,18 +107,14 @@ async with RingKernelRuntime() as runtime:
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    PyDotCompute Ring Kernel System                  │
-├─────────────────────────────────────────────────────────────────────┤
-│  Decorators           │  Runtime              │  Backends           │
-│  ─────────────────    │  ───────              │  ────────           │
-│  • @kernel            │  • RingKernelRuntime  │  • CPU simulation   │
-│  • @ring_kernel       │  • asyncio queues     │  • CUDA (Numba)     │
-│  • @message           │  • Lifecycle mgmt     │  • CuPy arrays      │
-│  • Type validation    │  • Telemetry          │  • PTX caching      │
-├─────────────────────────────────────────────────────────────────────┤
-│  Abstractions: Accelerator, UnifiedBuffer, ComputeOrchestrator      │
-└─────────────────────────────────────────────────────────────────────┘
+PyDotCompute Ring Kernel System
+├── Ring Kernels          │ Performance Tiers      │ CUDA Backend
+│   • RingKernelRuntime   │ • uvloop (21μs)        │ • Numba JIT
+│   • FastMessageQueue    │ • ThreadedRingKernel   │ • CuPy arrays
+│   • @ring_kernel        │ • CythonRingKernel     │ • Zero-copy DMA
+│   • @message            │ • FastSPSCQueue        │ • PTX caching
+├─────────────────────────┴────────────────────────┴─────────────────
+│ Memory: UnifiedBuffer, MemoryPool, Accelerator
 ```
 
 ## Installation
@@ -115,10 +125,18 @@ async with RingKernelRuntime() as runtime:
     pip install pydotcompute
     ```
 
+=== "Fast (Recommended)"
+
+    ```bash
+    pip install pydotcompute[fast]
+    ```
+
+    Includes uvloop for 21μs message latency.
+
 === "With CUDA support"
 
     ```bash
-    pip install pydotcompute[cuda]
+    pip install pydotcompute[cuda,fast]
     ```
 
 === "Development"

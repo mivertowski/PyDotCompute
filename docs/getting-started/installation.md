@@ -20,6 +20,23 @@ pip install pydotcompute
 
 This installs the core package with CPU backend support. All features work, but GPU kernels run on CPU for simulation.
 
+### With Performance Optimizations (Recommended)
+
+For optimal message latency on Linux/macOS:
+
+```bash
+pip install pydotcompute[fast]
+```
+
+This includes **uvloop**, which provides:
+
+- **21μs** message latency (p50)
+- 20-40% faster event loop performance
+- Automatic installation at import time
+
+!!! tip "uvloop Auto-Installation"
+    PyDotCompute automatically installs uvloop when you import `pydotcompute.ring_kernels`. No manual setup required!
+
 ### With CUDA Support
 
 For full GPU acceleration:
@@ -41,6 +58,29 @@ This includes:
     pip install pydotcompute
     pip install cupy-cuda11x  # For CUDA 11.x
     ```
+
+### With Cython Extensions (Maximum Performance)
+
+For multi-process scenarios requiring ultimate performance:
+
+```bash
+pip install pydotcompute[cython]
+python setup_cython.py build_ext --inplace
+```
+
+This provides:
+
+- **0.33μs** queue operations (vs 1.8μs for pure Python)
+- Lock-free SPSC queues
+- Best for multi-process IPC scenarios
+
+### Combined Installation
+
+For full GPU acceleration with performance optimizations:
+
+```bash
+pip install pydotcompute[cuda,fast]
+```
 
 ### Development Installation
 
@@ -154,13 +194,45 @@ This is expected on systems without NVIDIA GPUs. Tests automatically skip CUDA-s
 
 | Package | Purpose | Install |
 |---------|---------|---------|
+| `uvloop` | Fast event loop (Linux/macOS) | `pip install uvloop` |
 | `cupy-cuda12x` | GPU arrays | `pip install cupy-cuda12x` |
 | `numba` | CUDA JIT compiler | `pip install numba` |
 | `pynvml` | GPU monitoring | `pip install pynvml` |
+| `cython` | Maximum performance queues | `pip install cython` |
 | `pytest` | Testing | `pip install pytest` |
 | `mypy` | Type checking | `pip install mypy` |
+
+## Disabling uvloop
+
+If you need to disable uvloop auto-installation (e.g., for debugging or compatibility):
+
+```bash
+PYDOTCOMPUTE_NO_UVLOOP=1 python my_script.py
+```
+
+Or set it in your Python code before importing:
+
+```python
+import os
+os.environ["PYDOTCOMPUTE_NO_UVLOOP"] = "1"
+
+from pydotcompute import RingKernelRuntime  # uvloop NOT installed
+```
+
+## Performance Tiers
+
+PyDotCompute offers three performance tiers:
+
+| Tier | Implementation | Latency (p50) | Use Case |
+|------|---------------|---------------|----------|
+| **1 (Default)** | uvloop + FastMessageQueue | **21μs** | Async Python code |
+| 2 | ThreadedRingKernel | ~100μs | Blocking I/O, C extensions |
+| 3 | CythonRingKernel | **0.33μs** queue ops | Multi-process IPC |
+
+See the [Performance Tiers Guide](../articles/guides/performance-tiers.md) for detailed usage.
 
 ## Next Steps
 
 - [Quick Start](quickstart.md): Get up and running
 - [First Ring Kernel](first-kernel.md): Build your first actor
+- [Performance Tiers](../articles/guides/performance-tiers.md): Choose the right tier
