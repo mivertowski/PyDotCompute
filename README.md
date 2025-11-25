@@ -1,5 +1,11 @@
 # PyDotCompute
 
+[![PyPI version](https://img.shields.io/pypi/v/pydotcompute.svg)](https://pypi.org/project/pydotcompute/)
+[![Python versions](https://img.shields.io/pypi/pyversions/pydotcompute.svg)](https://pypi.org/project/pydotcompute/)
+[![License](https://img.shields.io/pypi/l/pydotcompute.svg)](https://github.com/mivertowski/PyDotCompute/blob/main/LICENSE)
+[![CI](https://github.com/mivertowski/PyDotCompute/actions/workflows/ci.yml/badge.svg)](https://github.com/mivertowski/PyDotCompute/actions/workflows/ci.yml)
+[![Documentation](https://img.shields.io/badge/docs-mkdocs-blue.svg)](https://mivertowski.github.io/PyDotCompute/)
+
 A Python port of DotCompute's Ring Kernel System - a GPU-native actor model with persistent kernels and message passing.
 
 ## Overview
