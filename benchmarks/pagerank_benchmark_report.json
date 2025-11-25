@@ -1,0 +1,473 @@
+{
+  "config": {
+    "graph_sizes": [
+      100,
+      500,
+      1000,
+      5000
+    ],
+    "density_levels": {
+      "sparse": 2.0,
+      "medium": 10.0,
+      "dense": 50.0
+    },
+    "damping": 0.85,
+    "max_iterations": 100,
+    "tolerance": 1e-06,
+    "measurement_runs": 3
+  },
+  "results": [
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 100,
+      "density": "sparse",
+      "num_edges": 200,
+      "compute_time": 0.00319367599998562,
+      "iterations": 35,
+      "converged": true,
+      "throughput_edges_per_sec": 62623.76020638929
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 100,
+      "density": "sparse",
+      "num_edges": 200,
+      "compute_time": 0.0004742343333343039,
+      "iterations": 35,
+      "converged": true,
+      "throughput_edges_per_sec": 421732.4346675111
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 100,
+      "density": "sparse",
+      "num_edges": 200,
+      "compute_time": 0.0014928033333300543,
+      "iterations": 35,
+      "converged": true,
+      "throughput_edges_per_sec": 133976.1209896633
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 100,
+      "density": "sparse",
+      "num_edges": 200,
+      "compute_time": 0.105958166000003,
+      "iterations": 35,
+      "converged": true,
+      "throughput_edges_per_sec": 1887.5373890483752
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 100,
+      "density": "medium",
+      "num_edges": 1000,
+      "compute_time": 0.0026949989999896693,
+      "iterations": 8,
+      "converged": true,
+      "throughput_edges_per_sec": 371057.6515998089
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 100,
+      "density": "medium",
+      "num_edges": 1000,
+      "compute_time": 0.0006663813333318558,
+      "iterations": 8,
+      "converged": true,
+      "throughput_edges_per_sec": 1500642.274896982
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 100,
+      "density": "medium",
+      "num_edges": 1000,
+      "compute_time": 0.001318388666656271,
+      "iterations": 8,
+      "converged": true,
+      "throughput_edges_per_sec": 758501.6659284731
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 100,
+      "density": "medium",
+      "num_edges": 1000,
+      "compute_time": 0.10522587399999377,
+      "iterations": 8,
+      "converged": true,
+      "throughput_edges_per_sec": 9503.366063750245
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 100,
+      "density": "dense",
+      "num_edges": 5000,
+      "compute_time": 0.00849331999998526,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 588697.94144206
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 100,
+      "density": "dense",
+      "num_edges": 5000,
+      "compute_time": 0.0023316103333286264,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 2144440.6591138914
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 100,
+      "density": "dense",
+      "num_edges": 5000,
+      "compute_time": 0.004000776999987465,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 1249757.2346610834
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 100,
+      "density": "dense",
+      "num_edges": 5000,
+      "compute_time": 0.10808358600000172,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 46260.49324455168
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 500,
+      "density": "sparse",
+      "num_edges": 1000,
+      "compute_time": 0.012665908333341728,
+      "iterations": 28,
+      "converged": true,
+      "throughput_edges_per_sec": 78952.09515827624
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 500,
+      "density": "sparse",
+      "num_edges": 1000,
+      "compute_time": 0.008903014000007184,
+      "iterations": 28,
+      "converged": true,
+      "throughput_edges_per_sec": 112321.51269212797
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 500,
+      "density": "sparse",
+      "num_edges": 1000,
+      "compute_time": 0.002245561999994076,
+      "iterations": 28,
+      "converged": true,
+      "throughput_edges_per_sec": 445322.81896587054
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 500,
+      "density": "sparse",
+      "num_edges": 1000,
+      "compute_time": 0.10541296400000988,
+      "iterations": 28,
+      "converged": true,
+      "throughput_edges_per_sec": 9486.499212752487
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 500,
+      "density": "medium",
+      "num_edges": 5000,
+      "compute_time": 0.013186688999998827,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 379170.23750241206
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 500,
+      "density": "medium",
+      "num_edges": 5000,
+      "compute_time": 0.007621938333329581,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 656001.1090795314
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 500,
+      "density": "medium",
+      "num_edges": 5000,
+      "compute_time": 0.0037297176666584164,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 1340584.0459982252
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 500,
+      "density": "medium",
+      "num_edges": 5000,
+      "compute_time": 0.10743039533333369,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 46541.76301302869
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 500,
+      "density": "dense",
+      "num_edges": 25000,
+      "compute_time": 0.03937901233333226,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 634855.9427641819
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 500,
+      "density": "dense",
+      "num_edges": 25000,
+      "compute_time": 0.013608608000007886,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 1837072.5352648497
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 500,
+      "density": "dense",
+      "num_edges": 25000,
+      "compute_time": 0.02216910433331994,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 1127695.5362795263
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 500,
+      "density": "dense",
+      "num_edges": 25000,
+      "compute_time": 0.12213068166666592,
+      "iterations": 5,
+      "converged": true,
+      "throughput_edges_per_sec": 204698.7674091026
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 1000,
+      "density": "sparse",
+      "num_edges": 2000,
+      "compute_time": 0.023680486999997658,
+      "iterations": 25,
+      "converged": true,
+      "throughput_edges_per_sec": 84457.7225122185
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 1000,
+      "density": "sparse",
+      "num_edges": 2000,
+      "compute_time": 0.038823264333340525,
+      "iterations": 25,
+      "converged": true,
+      "throughput_edges_per_sec": 51515.50325155028
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 1000,
+      "density": "sparse",
+      "num_edges": 2000,
+      "compute_time": 0.0029545676666581735,
+      "iterations": 25,
+      "converged": true,
+      "throughput_edges_per_sec": 676917.9878903036
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 1000,
+      "density": "sparse",
+      "num_edges": 2000,
+      "compute_time": 0.10804671333334188,
+      "iterations": 25,
+      "converged": true,
+      "throughput_edges_per_sec": 18510.51215069977
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 1000,
+      "density": "medium",
+      "num_edges": 10000,
+      "compute_time": 0.023296253666671873,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 429253.56768012093
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 1000,
+      "density": "medium",
+      "num_edges": 10000,
+      "compute_time": 0.024544793333348025,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 407418.3825542096
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 1000,
+      "density": "medium",
+      "num_edges": 10000,
+      "compute_time": 0.006596197666662344,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 1516024.913950156
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 1000,
+      "density": "medium",
+      "num_edges": 10000,
+      "compute_time": 0.11231129799998978,
+      "iterations": 7,
+      "converged": true,
+      "throughput_edges_per_sec": 89038.23727512178
+    },
+    {
+      "implementation": "CPU Basic",
+      "graph_size": 1000,
+      "density": "dense",
+      "num_edges": 50000,
+      "compute_time": 0.06916640300000647,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 722894.3219729863
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 1000,
+      "density": "dense",
+      "num_edges": 50000,
+      "compute_time": 0.041830713333325775,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 1195293.9841493429
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 1000,
+      "density": "dense",
+      "num_edges": 50000,
+      "compute_time": 0.03362695633333601,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 1486902.3382420314
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 1000,
+      "density": "dense",
+      "num_edges": 50000,
+      "compute_time": 0.14082310999999473,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 355055.3598766699
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 5000,
+      "density": "sparse",
+      "num_edges": 10000,
+      "compute_time": 3.556171658666661,
+      "iterations": 21,
+      "converged": true,
+      "throughput_edges_per_sec": 2812.0127372449074
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 5000,
+      "density": "sparse",
+      "num_edges": 10000,
+      "compute_time": 0.008286389333344838,
+      "iterations": 21,
+      "converged": true,
+      "throughput_edges_per_sec": 1206798.2323446365
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 5000,
+      "density": "sparse",
+      "num_edges": 10000,
+      "compute_time": 0.11439957866666835,
+      "iterations": 21,
+      "converged": true,
+      "throughput_edges_per_sec": 87412.90935290496
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 5000,
+      "density": "medium",
+      "num_edges": 50000,
+      "compute_time": 1.1267169139999946,
+      "iterations": 6,
+      "converged": true,
+      "throughput_edges_per_sec": 44376.719101955576
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 5000,
+      "density": "medium",
+      "num_edges": 50000,
+      "compute_time": 0.03486262666667509,
+      "iterations": 6,
+      "converged": true,
+      "throughput_edges_per_sec": 1434200.5976214812
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 5000,
+      "density": "medium",
+      "num_edges": 50000,
+      "compute_time": 0.14177120699999554,
+      "iterations": 6,
+      "converged": true,
+      "throughput_edges_per_sec": 352680.9220154384
+    },
+    {
+      "implementation": "CPU NumPy",
+      "graph_size": 5000,
+      "density": "dense",
+      "num_edges": 250000,
+      "compute_time": 0.9255565716666657,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 270107.746682432
+    },
+    {
+      "implementation": "CPU Sparse",
+      "graph_size": 5000,
+      "density": "dense",
+      "num_edges": 250000,
+      "compute_time": 0.20418087266667348,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 1224404.6013464078
+    },
+    {
+      "implementation": "GPU Actors",
+      "graph_size": 5000,
+      "density": "dense",
+      "num_edges": 250000,
+      "compute_time": 0.3076650616666636,
+      "iterations": 4,
+      "converged": true,
+      "throughput_edges_per_sec": 812571.9529078666
+    }
+  ],
+  "cuda_available": false,
+  "timestamp": "2025-11-25T10:28:33.328258"
+}

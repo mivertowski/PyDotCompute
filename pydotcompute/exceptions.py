@@ -1,5 +1,18 @@
 """
 PyDotCompute exception hierarchy.
+
+This module defines the complete exception hierarchy for PyDotCompute,
+providing specific exception types for different error categories:
+
+- KernelError: Kernel lifecycle and management issues
+- MessageError: Message serialization and routing problems
+- QueueError: Message queue capacity and timeout issues
+- BufferError: Memory buffer allocation and synchronization
+- BackendError: Compute backend availability and execution
+- CompilationError: Kernel compilation failures
+- ValidationError: Configuration and type validation errors
+
+All exceptions inherit from PyDotComputeError for easy catching.
 """
 
 from __future__ import annotations

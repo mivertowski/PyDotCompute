@@ -197,3 +197,81 @@ class TestKernelExecutionResult:
 
         assert not result.success
         assert result.error is error
+
+
+class TestBackendType:
+    """Tests for BackendType enum."""
+
+    def test_backend_types(self) -> None:
+        """Test backend type enum values exist."""
+        # auto() generates integer values
+        assert BackendType.CPU is not None
+        assert BackendType.CUDA is not None
+        assert BackendType.METAL is not None
+
+    def test_backend_type_names(self) -> None:
+        """Test backend type names."""
+        assert BackendType.CPU.name == "CPU"
+        assert BackendType.CUDA.name == "CUDA"
+        assert BackendType.METAL.name == "METAL"
+
+
+class TestCPUBackendEdgeCases:
+    """Edge case tests for CPUBackend."""
+
+    def test_allocate_various_dtypes(self) -> None:
+        """Test allocation with various data types."""
+        backend = CPUBackend()
+
+        for dtype in [np.float32, np.float64, np.int32, np.int64, np.uint8]:
+            arr = backend.allocate((10,), dtype)
+            assert arr.dtype == dtype
+
+    def test_allocate_multidimensional(self) -> None:
+        """Test multidimensional allocation."""
+        backend = CPUBackend()
+
+        arr = backend.allocate((2, 3, 4, 5), np.float32)
+        assert arr.shape == (2, 3, 4, 5)
+
+    def test_execute_kernel_with_kwargs(self) -> None:
+        """Test kernel execution with keyword arguments."""
+        backend = CPUBackend()
+
+        def kernel_with_kwargs(*, multiplier: int = 2) -> int:
+            return 10 * multiplier
+
+        result = backend.execute_kernel(
+            kernel_with_kwargs,
+            grid_size=(1,),
+            block_size=(1,),
+            multiplier=3,
+        )
+
+        assert result.success
+
+    def test_kernel_returning_value(self) -> None:
+        """Test kernel that returns a value."""
+        backend = CPUBackend()
+
+        def compute_kernel(x: np.ndarray) -> np.ndarray:
+            return x * 2
+
+        data = np.array([1, 2, 3], dtype=np.float32)
+        result = backend.execute_kernel(compute_kernel, (1,), (1,), data)
+
+        assert result.success
+
+    def test_multiple_kernel_executions(self) -> None:
+        """Test multiple sequential kernel executions."""
+        backend = CPUBackend()
+
+        def add_kernel(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+            return a + b
+
+        a = np.array([1, 2, 3], dtype=np.float32)
+        b = np.array([4, 5, 6], dtype=np.float32)
+
+        for _ in range(5):
+            result = backend.execute_kernel(add_kernel, (1,), (1,), a, b)
+            assert result.success

@@ -315,3 +315,127 @@ class TestRuntimeValidator:
         assert validated["queue_size"] == 1000
         assert validated["grid_size"] == (4,)
         assert validated["block_size"] == (256,)
+
+
+class TestKernelDecoratorEdgeCases:
+    """Edge case tests for kernel decorators."""
+
+    def test_kernel_meta_attributes(self) -> None:
+        """Test that kernel metadata is properly stored."""
+
+        @kernel(device="cpu", fastmath=False, cache=False)
+        def my_kernel(x: int) -> int:
+            return x * 2
+
+        assert my_kernel._kernel_meta["device"] == "cpu"
+        assert my_kernel._kernel_meta["fastmath"] is False
+        assert my_kernel._kernel_meta["cache"] is False
+        assert my_kernel._kernel_meta["compiled"] is None
+
+    def test_kernel_preserves_function_name(self) -> None:
+        """Test that decorated function preserves name."""
+
+        @kernel
+        def named_function() -> None:
+            pass
+
+        assert named_function.__name__ == "named_function"
+
+    def test_kernel_with_return_value(self) -> None:
+        """Test kernel that returns a value."""
+
+        @kernel(device="cpu")
+        def compute(a: int, b: int) -> int:
+            return a + b
+
+        result = compute(3, 4)
+        assert result == 7
+
+    def test_cuda_source_decorator(self) -> None:
+        """Test cuda_source decorator standalone."""
+        source = "void kernel() {}"
+
+        @cuda_source(source)
+        def my_kernel() -> None:
+            pass
+
+        assert hasattr(my_kernel, "__cuda_source__")
+        assert my_kernel.__cuda_source__ == source
+
+    def test_registry_get_nonexistent(self) -> None:
+        """Test getting non-existent kernel from registry."""
+        registry = get_kernel_registry()
+        registry.clear()
+
+        result = registry.get("nonexistent_kernel")
+        assert result is None
+
+    def test_registry_clear(self) -> None:
+        """Test clearing registry."""
+        registry = get_kernel_registry()
+        registry.register("temp1", lambda: None, overwrite=True)
+        registry.register("temp2", lambda: None, overwrite=True)
+
+        registry.clear()
+
+        assert registry.list() == []
+
+
+class TestRingKernelDecoratorEdgeCases:
+    """Edge case tests for ring_kernel decorator."""
+
+    def test_is_ring_kernel_false(self) -> None:
+        """Test is_ring_kernel returns False for non-ring kernels."""
+
+        def regular_function() -> None:
+            pass
+
+        assert is_ring_kernel(regular_function) is False
+
+    def test_get_ring_kernel_meta_none(self) -> None:
+        """Test get_ring_kernel_meta returns None for non-ring kernels."""
+
+        def regular_function() -> None:
+            pass
+
+        result = get_ring_kernel_meta(regular_function)
+        assert result is None
+
+    def test_builder_separate_queue_sizes(self) -> None:
+        """Test builder with separate input/output queue sizes."""
+
+        async def handler(ctx) -> None:  # type: ignore
+            pass
+
+        builder = (
+            RingKernelBuilder("test")
+            .with_input_queue_size(500)
+            .with_output_queue_size(1000)
+            .with_handler(handler)
+        )
+
+        assert builder._input_queue_size == 500
+        assert builder._output_queue_size == 1000
+
+    def test_ring_kernel_with_message_types(self) -> None:
+        """Test ring kernel with specified message types."""
+        from dataclasses import dataclass
+
+        @dataclass
+        class InputMsg:
+            value: int
+
+        @dataclass
+        class OutputMsg:
+            result: int
+
+        @ring_kernel(
+            kernel_id="typed_kernel",
+            auto_register=False,
+        )
+        async def typed_actor(ctx) -> None:  # type: ignore
+            pass
+
+        meta = get_ring_kernel_meta(typed_actor)
+        assert meta is not None
+        assert meta["kernel_id"] == "typed_kernel"
