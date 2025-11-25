@@ -1,0 +1,134 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pydotcompute"
+version = "0.1.0"
+description = "Python port of DotCompute's Ring Kernel System - GPU-native actor model with persistent kernels and message passing"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+authors = [
+    { name = "PyDotCompute Contributors" }
+]
+keywords = [
+    "gpu",
+    "cuda",
+    "actor-model",
+    "ring-kernel",
+    "hpc",
+    "parallel-computing",
+    "message-passing",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: System :: Distributed Computing",
+    "Typing :: Typed",
+]
+dependencies = [
+    "numpy>=1.26.0",
+    "msgpack>=1.0.0",
+]
+
+[project.optional-dependencies]
+cuda = [
+    "cupy-cuda12x>=13.0.0",
+    "numba>=0.59.0",
+    "pynvml>=11.5.0",
+]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.0.0",
+    "mypy>=1.8.0",
+    "ruff>=0.1.0",
+    "hypothesis>=6.0.0",
+]
+docs = [
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocstrings[python]>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/mivertowski/PyDotCompute"
+Documentation = "https://mivertowski.github.io/PyDotCompute/"
+Repository = "https://github.com/mivertowski/PyDotCompute"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pydotcompute"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+markers = [
+    "cuda: marks tests as requiring CUDA (deselect with '-m \"not cuda\"')",
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = [
+    "cupy.*",
+    "numba.*",
+    "pynvml.*",
+    "msgpack.*",
+]
+ignore_missing_imports = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "ARG", # flake8-unused-arguments
+    "SIM", # flake8-simplify
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # do not perform function calls in argument defaults
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pydotcompute"]
+
+[tool.coverage.run]
+source = ["pydotcompute"]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
