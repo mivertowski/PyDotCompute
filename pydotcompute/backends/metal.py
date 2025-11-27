@@ -323,9 +323,7 @@ class MetalBackend(Backend):
                 elif isinstance(result, (list, tuple)):
                     # Handle multiple outputs
                     mlx_results = [
-                        r
-                        for r in result
-                        if hasattr(r, "__module__") and "mlx" in str(type(r))
+                        r for r in result if hasattr(r, "__module__") and "mlx" in str(type(r))
                     ]
                     if mlx_results:
                         self._mx.eval(*mlx_results)
@@ -385,12 +383,9 @@ class MetalBackend(Backend):
         # Wrap Python function for MLX execution
         def metal_kernel(*args: Any, **kwargs: Any) -> Any:
             # Convert NumPy arrays to MLX arrays
-            mlx_args = [
-                self._mx.array(a) if isinstance(a, np.ndarray) else a for a in args
-            ]
+            mlx_args = [self._mx.array(a) if isinstance(a, np.ndarray) else a for a in args]
             mlx_kwargs = {
-                k: self._mx.array(v) if isinstance(v, np.ndarray) else v
-                for k, v in kwargs.items()
+                k: self._mx.array(v) if isinstance(v, np.ndarray) else v for k, v in kwargs.items()
             }
             result = func(*mlx_args, **mlx_kwargs)
             # Ensure result is evaluated
