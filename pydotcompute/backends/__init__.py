@@ -18,3 +18,11 @@ try:
     __all__.append("CUDABackend")
 except ImportError:
     pass
+
+# Conditionally export Metal backend if available (macOS only)
+try:
+    from pydotcompute.backends.metal import MetalBackend  # noqa: F401
+
+    __all__.append("MetalBackend")
+except ImportError:
+    pass

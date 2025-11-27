@@ -157,6 +157,21 @@ class CUDAError(BackendError):
     pass
 
 
+class MetalError(BackendError):
+    """Raised for Metal-specific errors."""
+
+    pass
+
+
+class MSLCompilationError(MetalError):
+    """Raised when Metal Shading Language compilation fails."""
+
+    def __init__(self, shader_name: str, error_message: str) -> None:
+        self.shader_name = shader_name
+        self.error_message = error_message
+        super().__init__(f"Failed to compile MSL shader '{shader_name}': {error_message}")
+
+
 class CompilationError(PyDotComputeError):
     """Base exception for compilation-related errors."""
 

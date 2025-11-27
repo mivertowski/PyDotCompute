@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pydotcompute"
-version = "0.1.0"
+version = "0.2.0"
 description = "Python port of DotCompute's Ring Kernel System - GPU-native actor model with persistent kernels and message passing"
 readme = "README.md"
 license = "Apache-2.0"
@@ -53,6 +53,10 @@ cython = [
     "cython>=3.0.0",
     "setuptools>=68.0.0",
 ]
+# Metal backend for macOS/Apple Silicon
+metal = [
+    "mlx>=0.4.0; sys_platform == 'darwin'",
+]
 dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
@@ -82,6 +86,7 @@ testpaths = ["tests"]
 addopts = "-v --tb=short"
 markers = [
     "cuda: marks tests as requiring CUDA (deselect with '-m \"not cuda\"')",
+    "metal: marks tests as requiring Metal (deselect with '-m \"not metal\"')",
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
 
@@ -103,6 +108,7 @@ module = [
     "pynvml.*",
     "msgpack.*",
     "uvloop.*",
+    "mlx.*",
 ]
 ignore_missing_imports = true
 

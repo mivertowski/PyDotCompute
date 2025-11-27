@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 import numpy as np
 
-from pydotcompute.exceptions import BufferNotAllocatedError, BufferSyncError
+from pydotcompute.exceptions import BufferNotAllocatedError, BufferSyncError, MetalError
 
 if TYPE_CHECKING:
     from numpy.typing import DTypeLike, NDArray
@@ -84,6 +84,16 @@ class UnifiedBuffer(Generic[T]):
             import cupy as cp
 
             self._cuda_available = cp.cuda.runtime.getDeviceCount() > 0
+        except ImportError:
+            pass
+
+        # Metal support
+        self._metal_available = False
+        self._metal_data: object | None = None  # mlx.core.array when available
+        try:
+            import mlx.core as mx
+
+            self._metal_available = mx.metal.is_available()
         except ImportError:
             pass
 
@@ -234,6 +244,99 @@ class UnifiedBuffer(Generic[T]):
 
         return self._device_data
 
+    @property
+    def metal(self) -> object:
+        """
+        Get the Metal (MLX) array, synchronizing from host if needed.
+
+        Returns:
+            MLX array with Metal data.
+
+        Raises:
+            BufferNotAllocatedError: If buffer is not allocated.
+            MetalError: If Metal is not available.
+        """
+        if self._state == BufferState.UNINITIALIZED:
+            raise BufferNotAllocatedError()
+
+        if not self._metal_available:
+            raise MetalError("Metal not available")
+
+        # Sync from host if needed
+        if self._state == BufferState.HOST_DIRTY:
+            self._sync_host_to_metal()
+
+        # Create Metal array if not exists
+        if self._metal_data is None:
+            try:
+                import mlx.core as mx
+
+                if self._host_data is not None:
+                    self._metal_data = mx.array(self._host_data)
+                else:
+                    mlx_dtype = self._numpy_to_mlx_dtype()
+                    self._metal_data = mx.zeros(self._shape, dtype=mlx_dtype)
+                self._state = BufferState.SYNCHRONIZED
+            except Exception as e:
+                raise MetalError(f"Failed to create Metal array: {e}") from e
+
+        return self._metal_data
+
+    def _numpy_to_mlx_dtype(self) -> object:
+        """Convert NumPy dtype to MLX dtype."""
+        import mlx.core as mx
+
+        mapping = {
+            np.float32: mx.float32,
+            np.float16: mx.float16,
+            np.int32: mx.int32,
+            np.int64: mx.int64,
+            np.int16: mx.int16,
+            np.int8: mx.int8,
+            np.uint32: mx.uint32,
+            np.uint64: mx.uint64,
+            np.uint16: mx.uint16,
+            np.uint8: mx.uint8,
+            np.bool_: mx.bool_,
+        }
+
+        # Handle float64 -> float32 (MLX prefers float32)
+        if self._dtype.type == np.float64:
+            return mx.float32
+
+        return mapping.get(self._dtype.type, mx.float32)
+
+    def _sync_host_to_metal(self) -> None:
+        """Synchronize data from host to Metal."""
+        if self._host_data is None or not self._metal_available:
+            return
+
+        try:
+            import mlx.core as mx
+
+            self._metal_data = mx.array(self._host_data)
+            self._state = BufferState.SYNCHRONIZED
+
+        except Exception as e:
+            raise BufferSyncError("host->metal", e) from e
+
+    def _sync_metal_to_host(self) -> None:
+        """Synchronize data from Metal to host."""
+        if self._metal_data is None:
+            return
+
+        try:
+            import numpy as np
+
+            if self._host_data is None:
+                self._host_data = np.empty(self._shape, dtype=self._dtype)
+
+            self._host_data[:] = np.array(self._metal_data)
+            self._state = BufferState.SYNCHRONIZED
+
+        except Exception as e:
+            raise BufferSyncError("metal->host", e) from e
+
     def mark_host_dirty(self) -> None:
         """Mark the host data as modified (needs sync to device)."""
         if self._state == BufferState.UNINITIALIZED:
@@ -242,6 +345,12 @@ class UnifiedBuffer(Generic[T]):
 
     def mark_device_dirty(self) -> None:
         """Mark the device data as modified (needs sync to host)."""
+        if self._state == BufferState.UNINITIALIZED:
+            raise BufferNotAllocatedError()
+        self._state = BufferState.DEVICE_DIRTY
+
+    def mark_metal_dirty(self) -> None:
+        """Mark the Metal data as modified (needs sync to host)."""
         if self._state == BufferState.UNINITIALIZED:
             raise BufferNotAllocatedError()
         self._state = BufferState.DEVICE_DIRTY
@@ -348,7 +457,8 @@ class UnifiedBuffer(Generic[T]):
         """String representation."""
         return (
             f"UnifiedBuffer(shape={self._shape}, dtype={self._dtype}, "
-            f"state={self._state.name}, cuda={self._cuda_available})"
+            f"state={self._state.name}, cuda={self._cuda_available}, "
+            f"metal={self._metal_available})"
         )
 
     def __len__(self) -> int:

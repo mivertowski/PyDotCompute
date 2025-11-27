@@ -76,6 +76,7 @@ class Accelerator:
         self._devices: list[DeviceProperties] = []
         self._current_device_id: int = 0
         self._cuda_available: bool = False
+        self._metal_available: bool = False
         self._discover_devices()
         Accelerator._initialized = True
 
@@ -138,14 +139,83 @@ class Accelerator:
             # CUDA error, fall back to CPU
             pass
 
-        # If no CUDA devices found, add CPU device
+        # Try to discover Metal devices (macOS only)
+        try:
+            import mlx.core as mx
+
+            if mx.metal.is_available():
+                self._metal_available = True
+                metal_device = DeviceProperties(
+                    device_id=len(self._devices),
+                    device_type=DeviceType.METAL,
+                    name="Apple Silicon GPU",
+                    compute_capability=None,  # Metal uses feature sets, not compute capability
+                    total_memory=0,  # Unified memory - not directly queryable
+                    multiprocessor_count=self._get_metal_gpu_cores(),
+                    max_threads_per_block=1024,  # Metal threadgroup size
+                    max_block_dims=(1024, 1024, 64),
+                    max_grid_dims=(2**30, 2**16, 2**16),
+                    warp_size=32,  # SIMD group width for Apple GPUs
+                    is_available=True,
+                )
+                self._devices.append(metal_device)
+        except ImportError:
+            # MLX not available
+            pass
+        except Exception:
+            # Metal error
+            pass
+
+        # If no GPU devices found, add CPU device
         if not self._devices:
             self._devices.append(cpu_device)
+
+    def _get_metal_gpu_cores(self) -> int:
+        """Estimate GPU cores based on Apple Silicon chip."""
+        try:
+            import subprocess
+
+            result = subprocess.run(
+                ["sysctl", "-n", "machdep.cpu.brand_string"],
+                capture_output=True,
+                text=True,
+                timeout=5,
+            )
+            chip_name = result.stdout.strip()
+
+            # Approximate GPU core counts for Apple Silicon
+            core_map = {
+                "M1": 8,
+                "M1 Pro": 16,
+                "M1 Max": 32,
+                "M1 Ultra": 64,
+                "M2": 10,
+                "M2 Pro": 19,
+                "M2 Max": 38,
+                "M2 Ultra": 76,
+                "M3": 10,
+                "M3 Pro": 18,
+                "M3 Max": 40,
+                "M4": 10,
+                "M4 Pro": 20,
+                "M4 Max": 40,
+            }
+            for chip, cores in core_map.items():
+                if chip in chip_name:
+                    return cores
+            return 8  # Default
+        except Exception:
+            return 8
 
     @property
     def cuda_available(self) -> bool:
         """Check if CUDA is available."""
         return self._cuda_available
+
+    @property
+    def metal_available(self) -> bool:
+        """Check if Metal is available."""
+        return self._metal_available
 
     @property
     def device_count(self) -> int:
@@ -197,6 +267,13 @@ class Accelerator:
                 cp.cuda.Stream.null.synchronize()
             except ImportError:
                 pass
+        elif self._metal_available and self.current_device.device_type == DeviceType.METAL:
+            try:
+                import mlx.core as mx
+
+                mx.eval()  # Force evaluation of pending operations
+            except ImportError:
+                pass
 
     def get_memory_info(self) -> dict[str, int]:
         """Get memory information for the current device."""
@@ -209,6 +286,26 @@ class Accelerator:
                     "free": mem_info[0],
                     "total": mem_info[1],
                     "used": mem_info[1] - mem_info[0],
+                }
+            except ImportError:
+                pass
+        elif self._metal_available and self.current_device.device_type == DeviceType.METAL:
+            try:
+                import mlx.core as mx
+
+                # Use new API if available, fallback to deprecated
+                if hasattr(mx, "get_cache_memory"):
+                    cache_memory = mx.get_cache_memory()
+                    peak_memory = mx.get_peak_memory()
+                else:
+                    cache_memory = mx.metal.get_cache_memory()
+                    peak_memory = mx.metal.get_peak_memory()
+                return {
+                    "free": 0,  # Unified memory - not directly queryable
+                    "total": 0,  # Unified memory
+                    "used": cache_memory,
+                    "cache_memory": cache_memory,
+                    "peak_memory": peak_memory,
                 }
             except ImportError:
                 pass
@@ -225,6 +322,7 @@ class Accelerator:
         return (
             f"Accelerator(devices={self.device_count}, "
             f"cuda_available={self.cuda_available}, "
+            f"metal_available={self.metal_available}, "
             f"current_device={self.current_device.name})"
         )
 
@@ -238,3 +336,8 @@ def get_accelerator() -> Accelerator:
 def cuda_available() -> bool:
     """Check if CUDA is available."""
     return get_accelerator().cuda_available
+
+
+def metal_available() -> bool:
+    """Check if Metal is available."""
+    return get_accelerator().metal_available

@@ -37,7 +37,7 @@ PyDotCompute brings GPU-native actor model capabilities to Python, enabling deve
 - **Unified Memory**: Transparent host-device memory management with lazy synchronization
 - **Lifecycle Management**: Two-phase launch (launch -> activate) with graceful shutdown
 - **Telemetry**: Real-time GPU monitoring and kernel performance metrics
-- **Backend Support**: CPU simulation and CUDA acceleration via Numba/CuPy
+- **Backend Support**: CPU simulation, CUDA via Numba/CuPy, and Metal via MLX (macOS)
 - **Performance Tiers**: From uvloop (default) to Cython extensions
 
 ## Installation
@@ -46,8 +46,11 @@ PyDotCompute brings GPU-native actor model capabilities to Python, enabling deve
 # Basic installation (CPU only)
 pip install pydotcompute
 
-# With CUDA support
+# With CUDA support (NVIDIA GPUs)
 pip install pydotcompute[cuda]
+
+# With Metal support (macOS/Apple Silicon)
+pip install pydotcompute[metal]
 
 # With performance optimizations (uvloop - Linux/macOS)
 pip install pydotcompute[fast]
@@ -187,13 +190,14 @@ GPU Actors (1000 samples):
 
 ```
 PyDotCompute Ring Kernel System
-├── Ring Kernels          │ Performance Tiers      │ CUDA Backend
-│   • RingKernelRuntime   │ • uvloop (21μs)        │ • Numba JIT
-│   • FastMessageQueue    │ • ThreadedRingKernel   │ • CuPy arrays
-│   • @ring_kernel        │ • CythonRingKernel     │ • Zero-copy DMA
-│   • @message            │ • FastSPSCQueue        │ • PTX caching
+├── Ring Kernels          │ Performance Tiers      │ GPU Backends
+│   • RingKernelRuntime   │ • uvloop (21μs)        │ CUDA:
+│   • FastMessageQueue    │ • ThreadedRingKernel   │ • Numba JIT, CuPy arrays
+│   • @ring_kernel        │ • CythonRingKernel     │ • Zero-copy DMA, PTX caching
+│   • @message            │ • FastSPSCQueue        │ Metal (macOS):
+│                         │                        │ • MLX, Unified memory
 ├─────────────────────────┴────────────────────────┴─────────────────
-│ Memory: UnifiedBuffer, MemoryPool, Accelerator
+│ Memory: UnifiedBuffer (.host, .device, .metal), MemoryPool, Accelerator
 ```
 
 ## Core Components
@@ -213,9 +217,12 @@ buffer.allocate()
 buffer.host[:] = np.random.randn(1000)
 buffer.mark_host_dirty()
 
-# Access on device (auto-syncs)
+# Access on CUDA device (auto-syncs)
 await buffer.ensure_on_device()
 device_data = buffer.device
+
+# Access on Metal/macOS (auto-syncs)
+metal_data = buffer.metal  # MLX array
 ```
 
 ### Ring Kernels
@@ -248,6 +255,34 @@ async with RingKernelRuntime() as runtime:
     await runtime.reactivate("my_kernel")
 ```
 
+### Metal Backend (macOS)
+
+GPU acceleration on Apple Silicon using MLX:
+
+```python
+from pydotcompute.backends.metal import MetalBackend, get_vector_add_kernel
+import numpy as np
+
+# Initialize backend
+backend = MetalBackend()
+
+if backend.is_available:
+    # Copy data to Metal GPU
+    a = backend.copy_to_device(np.array([1, 2, 3], dtype=np.float32))
+    b = backend.copy_to_device(np.array([4, 5, 6], dtype=np.float32))
+
+    # Use pre-built kernels
+    add_kernel = get_vector_add_kernel()
+    result = add_kernel(a, b)  # [5, 7, 9]
+
+    # Copy back to host
+    result_np = backend.copy_to_host(result)
+
+    # Or compile custom kernels
+    compiled = backend.compile_kernel(lambda x: x * 2 + 1)
+    output = compiled(np.array([1, 2, 3], dtype=np.float32))
+```
+
 ## Project Structure
 
 ```
@@ -272,7 +307,8 @@ pydotcompute/
 │       └── fast_spsc.pyx   # 0.33μs queue
 ├── backends/
 │   ├── cpu.py              # CPU simulation
-│   └── cuda.py             # CUDA via Numba/CuPy
+│   ├── cuda.py             # CUDA via Numba/CuPy
+│   └── metal.py            # Metal via MLX (macOS)
 ├── compilation/
 │   ├── compiler.py         # Kernel compilation
 │   └── cache.py            # PTX caching
@@ -297,10 +333,14 @@ pytest tests/unit/
 # Skip CUDA tests (if no GPU)
 pytest -m "not cuda"
 
+# Skip Metal tests (if not on macOS)
+pytest -m "not metal"
+
 # Run benchmarks
 python benchmarks/extended_benchmark.py
 python benchmarks/pagerank_benchmark.py
 python benchmarks/realtime_anomaly_benchmark.py
+python benchmarks/metal_benchmark.py  # macOS only
 ```
 
 ## Requirements
@@ -317,6 +357,7 @@ python benchmarks/realtime_anomaly_benchmark.py
 | cupy-cuda12x | CUDA array operations |
 | numba | GPU kernel JIT compilation |
 | pynvml | GPU monitoring |
+| mlx | Metal GPU acceleration (macOS only) |
 | cython | Maximum performance queues |
 
 ## Disabling uvloop
@@ -340,4 +381,5 @@ Apache License 2.0 - see [LICENSE](LICENSE) file for details.
 - [DotCompute](https://github.com/mivertowski/DotCompute) - Original .NET implementation
 - [Numba CUDA](https://numba.readthedocs.io/en/stable/cuda/) - Python CUDA JIT
 - [CuPy](https://cupy.dev/) - NumPy-compatible GPU arrays
+- [MLX](https://ml-explore.github.io/mlx/) - Apple's ML framework for Apple Silicon
 - [uvloop](https://github.com/MagicStack/uvloop) - Fast asyncio event loop

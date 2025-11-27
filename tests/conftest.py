@@ -102,11 +102,14 @@ def test_response() -> TestResponse:
     return TestResponse(result=84.0)
 
 
-# Markers for CUDA tests
+# Markers for CUDA and Metal tests
 def pytest_configure(config: pytest.Config) -> None:
     """Configure custom markers."""
     config.addinivalue_line(
         "markers", "cuda: mark test as requiring CUDA"
+    )
+    config.addinivalue_line(
+        "markers", "metal: mark test as requiring Metal"
     )
     config.addinivalue_line(
         "markers", "slow: mark test as slow running"
@@ -117,7 +120,8 @@ def pytest_collection_modifyitems(
     config: pytest.Config,
     items: list[pytest.Item],
 ) -> None:
-    """Skip CUDA tests if CUDA is not available."""
+    """Skip CUDA and Metal tests if not available."""
+    # Check CUDA availability
     cuda_available = False
     try:
         import cupy as cp
@@ -131,3 +135,21 @@ def pytest_collection_modifyitems(
         for item in items:
             if "cuda" in item.keywords:
                 item.add_marker(skip_cuda)
+
+    # Check Metal availability
+    import sys
+
+    metal_available = False
+    if sys.platform == "darwin":
+        try:
+            import mlx.core as mx
+
+            metal_available = mx.metal.is_available()
+        except ImportError:
+            pass
+
+    if not metal_available:
+        skip_metal = pytest.mark.skip(reason="Metal/MLX not available")
+        for item in items:
+            if "metal" in item.keywords:
+                item.add_marker(skip_metal)

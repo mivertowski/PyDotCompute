@@ -15,6 +15,9 @@ pip install -e ".[dev]"
 # Install with CUDA support
 pip install -e ".[cuda]"
 
+# Install with Metal support (macOS only)
+pip install -e ".[metal]"
+
 # Install with performance optimizations (uvloop)
 pip install -e ".[fast]"
 
@@ -34,10 +37,14 @@ pytest tests/unit/
 # Skip CUDA tests (if no GPU)
 pytest -m "not cuda"
 
+# Skip Metal tests (if not on macOS)
+pytest -m "not metal"
+
 # Run benchmarks
 python benchmarks/extended_benchmark.py
 python benchmarks/pagerank_benchmark.py
 python benchmarks/realtime_anomaly_benchmark.py
+python benchmarks/metal_benchmark.py  # macOS only
 
 # Type checking
 mypy pydotcompute
@@ -78,6 +85,7 @@ mkdocs serve
 - `base.py` - `Backend` ABC: Interface all backends implement (allocate, free, copy_to_device, execute_kernel, compile_kernel).
 - `cpu.py` - CPU simulation backend.
 - `cuda.py` - CUDA backend via Numba JIT and CuPy arrays.
+- `metal.py` - Metal backend via Apple MLX for macOS/Apple Silicon GPU acceleration.
 
 **Decorators** (`pydotcompute/decorators/`)
 - `ring_kernel.py` - `@ring_kernel`: Decorator for defining persistent GPU actor kernels. Auto-registers with global registry.
@@ -132,6 +140,39 @@ UNINITIALIZED -> HOST_ONLY/DEVICE_ONLY/SYNCHRONIZED
 HOST_DIRTY (after host write) -> SYNCHRONIZED (after device access)
 DEVICE_DIRTY (after device write) -> SYNCHRONIZED (after host access)
 
+**Metal Backend Usage (macOS):**
+```python
+from pydotcompute.backends.metal import MetalBackend, get_vector_add_kernel
+import numpy as np
+
+backend = MetalBackend()
+if backend.is_available:
+    # Allocate and copy data
+    data = backend.copy_to_device(np.array([1, 2, 3], dtype=np.float32))
+
+    # Use pre-built kernels
+    add_kernel = get_vector_add_kernel()
+    result = add_kernel(data, data)  # [2, 4, 6]
+
+    # Or compile custom kernels
+    compiled = backend.compile_kernel(lambda x: x * 2 + 1)
+    result = compiled(np.array([1, 2, 3], dtype=np.float32))
+```
+
+**UnifiedBuffer with Metal:**
+```python
+from pydotcompute.core.unified_buffer import UnifiedBuffer
+import numpy as np
+
+buffer = UnifiedBuffer((1000,), dtype=np.float32)
+buffer.allocate()
+buffer.host[:] = np.random.randn(1000)
+buffer.mark_host_dirty()
+
+# Access .metal property for Metal GPU operations (auto-syncs from host)
+metal_arr = buffer.metal  # MLX array on Metal GPU
+```
+
 ## Performance Benchmarks
 
 ### Message Latency (Extended Benchmark)
@@ -155,6 +196,11 @@ DEVICE_DIRTY (after device write) -> SYNCHRONIZED (after host access)
 | FastMessageQueue (Python) | 1.8μs |
 | FastSPSCQueue (Cython) | **0.33μs** |
 
+### Metal Backend (Apple Silicon)
+- **Matrix multiply speedup**: 4-10x vs CPU at 1024x1024+
+- **Unified memory**: Zero-copy host-device transfers
+- **Best for**: Large matrix operations, streaming pipelines
+
 ## Lessons Learned
 
 1. **uvloop beats threading for Python**: The GIL makes native threading slower than uvloop's libuv-based event loop for message passing.
@@ -172,9 +218,10 @@ DEVICE_DIRTY (after device write) -> SYNCHRONIZED (after host access)
 - pytest-asyncio is configured with `asyncio_mode = "auto"` - async tests run automatically.
 - Fixtures in `tests/conftest.py` provide `runtime`, `accelerator`, `memory_pool`, `unified_buffer`, `message_queue`.
 - CUDA tests are automatically skipped if CUDA is not available.
+- Metal tests are automatically skipped if Metal/MLX is not available (non-macOS).
 - Use `@pytest.mark.cuda` for CUDA-specific tests.
+- Use `@pytest.mark.metal` for Metal-specific tests.
 - Use `@pytest.mark.slow` for slow-running tests.
-- All 398 tests passing.
 
 ## Requirements
 
@@ -182,6 +229,7 @@ DEVICE_DIRTY (after device write) -> SYNCHRONIZED (after host access)
 - Core: numpy, msgpack
 - Performance: uvloop (Linux/macOS, auto-installed)
 - CUDA (optional): cupy-cuda12x, numba, pynvml
+- Metal (optional, macOS only): mlx >= 0.4.0
 - Cython (optional): cython >= 3.0.0
 
 ## Disabling uvloop
