@@ -280,8 +280,8 @@ class MetalBackend(Backend):
     def execute_kernel(
         self,
         kernel: Callable[..., Any],
-        grid_size: tuple[int, ...],
-        block_size: tuple[int, ...],
+        grid_size: tuple[int, ...],  # noqa: ARG002 - Required by Backend ABC
+        block_size: tuple[int, ...],  # noqa: ARG002 - Required by Backend ABC
         *args: Any,
         **kwargs: Any,
     ) -> KernelExecutionResult:
@@ -403,7 +403,7 @@ class MetalBackend(Backend):
 
     def _compile_msl_kernel(
         self,
-        source: str,
+        source: str,  # noqa: ARG002 - Will be used when MSL compilation is implemented
         kernel_name: str,
     ) -> Callable[..., Any]:
         """
@@ -541,10 +541,10 @@ class MetalBackend(Backend):
 
     def __del__(self) -> None:
         """Destructor to ensure cleanup."""
-        try:
+        import contextlib
+
+        with contextlib.suppress(Exception):
             self._cleanup()
-        except Exception:
-            pass
 
 
 # Utility functions for Metal operations
