@@ -4,7 +4,7 @@ Performance tuning for GPU-accelerated ring kernels.
 
 ## Overview
 
-This guide covers techniques to maximize GPU performance with PyDotCompute.
+This guide covers techniques to maximize GPU performance with PyDotCompute across CUDA (NVIDIA) and Metal (Apple Silicon) backends.
 
 ## Memory Optimization
 
@@ -47,9 +47,9 @@ result = gpu_kernel(buf.device)
 buf.sync_to_host()
 ```
 
-### Use Pinned Memory
+### Use Pinned Memory (CUDA)
 
-For streaming workloads:
+For streaming workloads on NVIDIA GPUs:
 
 ```python
 # Enable pinned memory for fast transfers
@@ -57,6 +57,9 @@ buf = UnifiedBuffer((10000,), dtype=np.float32, pinned=True)
 
 # DMA transfers are faster with pinned memory
 ```
+
+!!! note "Metal Advantage"
+    On Apple Silicon with Metal, pinned memory is not needed. The unified memory architecture means CPU and GPU share the same physical memory, eliminating transfer overhead entirely.
 
 ### Memory Pooling
 
@@ -377,11 +380,12 @@ print(f"Kernel time: {elapsed*1000:.2f} ms")
 
 | Area | Recommendation |
 |------|----------------|
-| Transfers | Minimize, batch, use pinned memory |
+| Transfers | Minimize, batch, use pinned memory (CUDA) |
 | Memory | Pool buffers, use UnifiedBuffer |
-| Kernels | Coalesced access, avoid divergence |
+| Kernels | Coalesced access, avoid divergence (CUDA) |
 | Actors | Batch processing, tune queue size |
 | Profiling | Measure before optimizing |
+| Metal | Leverage unified memory, use MLX operations |
 
 ## Next Steps
 

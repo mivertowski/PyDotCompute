@@ -4,7 +4,7 @@ Managing host and device memory with UnifiedBuffer.
 
 ## Overview
 
-PyDotCompute provides `UnifiedBuffer` for seamless host-device memory management. It tracks which copy is current and automatically synchronizes when needed.
+PyDotCompute provides `UnifiedBuffer` for seamless host-device memory management across CPU, CUDA (NVIDIA), and Metal (Apple Silicon) backends. It tracks which copy is current and automatically synchronizes when needed.
 
 ## The Memory Challenge
 
@@ -47,7 +47,7 @@ result = buf.to_numpy()
 
 ## Buffer States
 
-The buffer tracks its state:
+The buffer tracks its state across host and device memory (CUDA or Metal):
 
 ```
 ┌─────────────────┐
@@ -57,7 +57,7 @@ The buffer tracks its state:
 ┌────────▼────────┐
 │    HOST_ONLY    │  Data on host only
 └────────┬────────┘
-         │ .device access
+         │ .device/.metal access
 ┌────────▼────────┐
 │  SYNCHRONIZED   │  Both copies match
 └────────┬────────┘
@@ -126,9 +126,9 @@ buf.sync_to_host()
 result = buf.host[:]
 ```
 
-## Pinned Memory
+## Pinned Memory (CUDA)
 
-For faster transfers, use pinned (page-locked) memory:
+For faster CUDA transfers, use pinned (page-locked) memory:
 
 ```python
 # Pinned memory for frequent transfers
@@ -150,6 +150,9 @@ device_view = buf.device  # Faster copy
 - Limited system memory
 - Many small buffers (overhead)
 - Infrequent transfers
+
+!!! note "Metal and Unified Memory"
+    On Apple Silicon with Metal, the unified memory architecture eliminates the need for explicit pinned memory. CPU and GPU share the same physical memory, making transfers virtually free.
 
 ## Memory Pooling
 
@@ -280,23 +283,41 @@ for batch in batches:
 
 ## GPU Memory Monitoring
 
-```python
-from pydotcompute import get_accelerator
+=== "CUDA"
 
-acc = get_accelerator()
+    ```python
+    from pydotcompute import get_accelerator
 
-# Before allocation
-free_before, total = acc.get_memory_info()
+    acc = get_accelerator()
 
-# Allocate
-buf = UnifiedBuffer((10_000_000,), dtype=np.float32)
-_ = buf.device  # Force device allocation
+    # Before allocation
+    free_before, total = acc.get_memory_info()
 
-# After allocation
-free_after, _ = acc.get_memory_info()
+    # Allocate
+    buf = UnifiedBuffer((10_000_000,), dtype=np.float32)
+    _ = buf.device  # Force device allocation
 
-print(f"Allocated: {(free_before - free_after) / 1e6:.1f} MB")
-```
+    # After allocation
+    free_after, _ = acc.get_memory_info()
+
+    print(f"Allocated: {(free_before - free_after) / 1e6:.1f} MB")
+    ```
+
+=== "Metal (macOS)"
+
+    ```python
+    from pydotcompute import get_accelerator
+
+    acc = get_accelerator()
+
+    # Metal memory info includes cache and peak usage
+    free, total = acc.get_memory_info()
+    print(f"Memory: {free / 1e9:.1f} GB free / {total / 1e9:.1f} GB total")
+
+    # Allocate
+    buf = UnifiedBuffer((10_000_000,), dtype=np.float32)
+    _ = buf.metal  # Force Metal allocation (virtually free on unified memory)
+    ```
 
 ## Next Steps
 

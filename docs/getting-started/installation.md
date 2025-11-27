@@ -6,7 +6,9 @@ This guide covers all installation options for PyDotCompute.
 
 - **Python**: 3.11 or higher
 - **Operating System**: Linux, macOS, or Windows
-- **GPU (optional)**: NVIDIA GPU with CUDA 12.x for GPU acceleration
+- **GPU (optional)**:
+  - NVIDIA GPU with CUDA 12.x for CUDA acceleration
+  - Apple Silicon (M1/M2/M3/M4) for Metal acceleration (macOS only)
 
 ## Installation Options
 
@@ -59,6 +61,21 @@ This includes:
     pip install cupy-cuda11x  # For CUDA 11.x
     ```
 
+### With Metal Support (macOS)
+
+For Apple Silicon GPU acceleration on macOS:
+
+```bash
+pip install pydotcompute[metal]
+```
+
+This includes:
+
+- **MLX**: Apple's machine learning framework for Metal
+
+!!! note "Apple Silicon Only"
+    Metal support requires macOS with Apple Silicon (M1, M2, M3, M4 chips). Intel Macs are not supported for Metal acceleration.
+
 ### With Cython Extensions (Maximum Performance)
 
 For multi-process scenarios requiring ultimate performance:
@@ -78,9 +95,17 @@ This provides:
 
 For full GPU acceleration with performance optimizations:
 
-```bash
-pip install pydotcompute[cuda,fast]
-```
+=== "NVIDIA GPU"
+
+    ```bash
+    pip install pydotcompute[cuda,fast]
+    ```
+
+=== "Apple Silicon"
+
+    ```bash
+    pip install pydotcompute[metal,fast]
+    ```
 
 ### Development Installation
 

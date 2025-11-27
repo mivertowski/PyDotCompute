@@ -27,6 +27,7 @@ class DeviceType(Enum):
     """Type of compute device."""
     CPU = "cpu"
     CUDA = "cuda"
+    METAL = "metal"  # macOS/Apple Silicon
 ```
 
 ### DeviceInfo
@@ -65,6 +66,13 @@ def cuda_available() -> bool:
     """Check if CUDA is available."""
 ```
 
+### metal_available
+
+```python
+def metal_available() -> bool:
+    """Check if Metal is available (macOS only)."""
+```
+
 ## Properties
 
 ### devices
@@ -89,6 +97,14 @@ def device_count(self) -> int:
 @property
 def cuda_available(self) -> bool:
     """Whether CUDA devices are available."""
+```
+
+### metal_available
+
+```python
+@property
+def metal_available(self) -> bool:
+    """Whether Metal devices are available (macOS only)."""
 ```
 
 ### current_device
@@ -151,6 +167,20 @@ else:
     print("Running in CPU mode")
 ```
 
+### Check Metal Availability (macOS)
+
+```python
+from pydotcompute.core.accelerator import metal_available, get_accelerator
+
+if metal_available():
+    print("Metal is available on Apple Silicon!")
+    acc = get_accelerator()
+    for device in acc.devices:
+        if device.device_type.name == "METAL":
+            print(f"  GPU: {device.name}")
+            print(f"  GPU Cores: {device.multiprocessor_count}")
+```
+
 ### Memory Monitoring
 
 ```python
@@ -169,6 +199,8 @@ if acc.cuda_available:
 ## Notes
 
 - The `Accelerator` is a singleton - use `get_accelerator()` to access it
-- CPU is always available as device 0
-- CUDA devices are numbered starting from 1 when available
+- CPU is always available as a fallback device
+- CUDA devices are available on systems with NVIDIA GPUs
+- Metal devices are available on macOS with Apple Silicon (M1/M2/M3/M4)
 - Memory info for CPU returns system RAM information
+- Metal memory info includes MLX cache and peak memory usage

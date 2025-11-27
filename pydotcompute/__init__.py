@@ -42,7 +42,7 @@ from pydotcompute.decorators.ring_kernel import ring_kernel
 from pydotcompute.ring_kernels.message import RingKernelMessage, message
 from pydotcompute.ring_kernels.runtime import RingKernelRuntime
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     # Version

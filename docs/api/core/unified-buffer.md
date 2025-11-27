@@ -4,7 +4,7 @@ Host-device memory abstraction with lazy synchronization.
 
 ## Overview
 
-`UnifiedBuffer` provides a unified view of memory that can exist on both host (CPU) and device (GPU). It tracks which copy is current and automatically synchronizes when needed.
+`UnifiedBuffer` provides a unified view of memory that can exist on host (CPU), CUDA device, and Metal device (macOS). It tracks which copy is current and automatically synchronizes when needed.
 
 ```python
 from pydotcompute import UnifiedBuffer
@@ -79,10 +79,23 @@ def host(self) -> np.ndarray:
 @property
 def device(self) -> Any:
     """
-    Get device (GPU) view of data.
+    Get device (CUDA GPU) view of data.
 
     Automatically syncs from host if host is dirty.
     Returns CuPy array if CUDA available, else NumPy array.
+    """
+```
+
+### metal
+
+```python
+@property
+def metal(self) -> Any:
+    """
+    Get Metal (Apple GPU) view of data.
+
+    Automatically syncs from host if host is dirty.
+    Returns MLX array if Metal available (macOS only).
     """
 ```
 
@@ -145,7 +158,14 @@ def mark_host_dirty(self) -> None:
 
 ```python
 def mark_device_dirty(self) -> None:
-    """Mark device data as modified (host copy is stale)."""
+    """Mark CUDA device data as modified (host copy is stale)."""
+```
+
+### mark_metal_dirty
+
+```python
+def mark_metal_dirty(self) -> None:
+    """Mark Metal device data as modified (host copy is stale)."""
 ```
 
 ### fill
@@ -230,20 +250,49 @@ buf.sync_to_device()
 print(buf.state)  # SYNCHRONIZED
 ```
 
+### Metal Example (macOS)
+
+```python
+from pydotcompute import UnifiedBuffer
+import numpy as np
+
+buf = UnifiedBuffer((1000,), dtype=np.float32)
+
+# Initialize on host
+buf.host[:] = np.random.randn(1000).astype(np.float32)
+buf.mark_host_dirty()
+
+# Access on Metal (automatically syncs from host)
+metal_array = buf.metal  # Returns MLX array
+
+# Compute on Metal
+import mlx.core as mx
+result = mx.sum(metal_array)
+mx.eval(result)
+print(f"Sum: {float(result)}")
+
+# After Metal modifies data
+buf.mark_metal_dirty()
+```
+
 ## Performance Tips
 
-1. **Minimize Transfers**: Access `host` or `device` properties sparingly - each access may trigger a sync
+1. **Minimize Transfers**: Access `host`, `device`, or `metal` properties sparingly - each access may trigger a sync
 
 2. **Batch Operations**: Do all host work, then sync once, then do all device work
 
-3. **Use Pinned Memory**: For buffers that transfer frequently, use `pinned=True`
+3. **Use Pinned Memory**: For CUDA buffers that transfer frequently, use `pinned=True`
 
 4. **Explicit Sync**: For performance-critical code, use explicit `sync_to_device()` / `sync_to_host()` instead of relying on lazy sync
 
 5. **Check State**: Use `state` property to understand when syncs will occur
 
+6. **Unified Memory on Metal**: Apple Silicon's unified memory architecture makes Metal transfers virtually free
+
 ## Notes
 
 - On systems without CUDA, `device` returns the same NumPy array as `host`
+- On systems without Metal (non-macOS), `metal` raises an error
 - Pinned memory requires CUDA and may be limited by system resources
 - Large buffers should use explicit sync to avoid unexpected latency
+- Metal uses unified memory on Apple Silicon, eliminating physical data transfers

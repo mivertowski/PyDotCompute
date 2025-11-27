@@ -22,7 +22,8 @@ pydotcompute/
 ├── backends/            # Compute backends
 │   ├── base.py          # Backend interface
 │   ├── cpu.py           # CPU simulation
-│   └── cuda.py          # CUDA backend
+│   ├── cuda.py          # CUDA backend
+│   └── metal.py         # Metal backend (macOS)
 └── decorators/          # API decorators
     ├── kernel.py        # @kernel decorator
     ├── ring_kernel.py   # @ring_kernel decorator
@@ -51,6 +52,7 @@ pydotcompute/
 - **[Backend Interface](backends/base.md)**: Abstract backend API
 - **[CPUBackend](backends/cpu.md)**: CPU simulation backend
 - **[CUDABackend](backends/cuda.md)**: NVIDIA GPU backend
+- **[MetalBackend](backends/metal.md)**: Apple Silicon GPU backend (macOS)
 
 ### Decorators
 

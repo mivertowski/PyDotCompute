@@ -37,7 +37,9 @@ PyDotComputeError
 │   └── MessageValidationError
 ├── BackendError
 │   ├── BackendNotAvailableError
-│   └── BackendExecutionError
+│   ├── BackendExecutionError
+│   └── MetalError
+│       └── MSLCompilationError
 └── MemoryError
     ├── AllocationError
     └── OutOfMemoryError
@@ -239,6 +241,41 @@ class BackendExecutionError(BackendError):
         self.reason = reason
         super().__init__(backend, f"Execution failed: {reason}")
 ```
+
+### MetalError
+
+```python
+class MetalError(BackendError):
+    """Raised for Metal-specific errors on macOS."""
+
+    def __init__(self, message: str) -> None:
+        super().__init__("Metal", message)
+```
+
+**When raised:**
+
+- Metal/MLX not available on the system
+- Metal memory allocation fails
+- Metal operations fail
+
+### MSLCompilationError
+
+```python
+class MSLCompilationError(MetalError):
+    """Raised when Metal Shading Language compilation fails."""
+
+    def __init__(self, shader_name: str, error_message: str) -> None:
+        self.shader_name = shader_name
+        self.error_message = error_message
+        super().__init__(
+            f"Failed to compile MSL shader '{shader_name}': {error_message}"
+        )
+```
+
+**When raised:**
+
+- Custom MSL shader compilation fails
+- Invalid Metal shader syntax
 
 ## Memory Exceptions
 

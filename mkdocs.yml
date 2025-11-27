@@ -109,6 +109,7 @@ nav:
       - api/backends/base.md
       - api/backends/cpu.md
       - api/backends/cuda.md
+      - api/backends/metal.md
     - Decorators:
       - api/decorators/kernel.md
       - api/decorators/ring-kernel.md

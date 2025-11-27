@@ -4,6 +4,12 @@ Understanding GPU architecture and why persistent kernels matter.
 
 ## GPU Architecture
 
+PyDotCompute supports multiple GPU backends:
+
+- **CUDA**: NVIDIA GPUs (Windows, Linux)
+- **Metal**: Apple Silicon GPUs via MLX (macOS)
+- **CPU**: Fallback simulation for development/testing
+
 ### CPU vs GPU
 
 ```
@@ -173,23 +179,46 @@ Efficiency: 10/12 = 83%
 
 ### Unified Memory
 
-PyDotCompute's `UnifiedBuffer` uses CUDA Unified Memory:
+PyDotCompute's `UnifiedBuffer` abstracts memory across backends:
 
-```python
-from pydotcompute import UnifiedBuffer
+=== "CUDA"
 
-# Single buffer, accessible from both host and device
-buf = UnifiedBuffer((1000,), dtype=np.float32)
+    ```python
+    from pydotcompute import UnifiedBuffer
 
-# Host access
-buf.host[:] = data      # Automatic page migration
+    # Single buffer, accessible from both host and device
+    buf = UnifiedBuffer((1000,), dtype=np.float32)
 
-# Device access
-result = kernel(buf.device)  # Data migrates to GPU
+    # Host access
+    buf.host[:] = data      # Automatic page migration
 
-# Host access again
-output = buf.host[:]    # Data migrates back
-```
+    # Device access
+    result = kernel(buf.device)  # Data migrates to GPU
+
+    # Host access again
+    output = buf.host[:]    # Data migrates back
+    ```
+
+=== "Metal (macOS)"
+
+    ```python
+    from pydotcompute import UnifiedBuffer
+
+    # On Apple Silicon, memory is truly unified
+    buf = UnifiedBuffer((1000,), dtype=np.float32)
+
+    # Host access
+    buf.host[:] = data
+
+    # Metal access (no physical transfer needed!)
+    metal_array = buf.metal  # Returns MLX array
+
+    # CPU and GPU share the same physical memory
+    output = buf.host[:]    # Virtually free
+    ```
+
+!!! tip "Apple Silicon Advantage"
+    Apple Silicon's unified memory architecture means CPU and GPU share the same physical memory. This eliminates the traditional host-device transfer bottleneck, making Metal particularly efficient for streaming workloads.
 
 ## Kernel Launch Overhead
 
@@ -276,6 +305,7 @@ PyDotCompute addresses these GPU challenges:
 | State management | Manual | Automatic |
 | Synchronization | Explicit | Message-based |
 | Memory tracking | Manual | UnifiedBuffer |
+| Backend portability | Vendor-specific | Multi-backend (CUDA, Metal, CPU) |
 
 ## Next Steps
 

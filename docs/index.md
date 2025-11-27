@@ -102,19 +102,20 @@ async with RingKernelRuntime() as runtime:
 - **Unified Memory**: Transparent host-device memory with lazy synchronization
 - **Lifecycle Management**: Two-phase launch with graceful shutdown
 - **GPU Telemetry**: Real-time monitoring and performance metrics
-- **CPU Backend**: Full compatibility for development and testing
+- **Multi-Backend**: CPU simulation, CUDA (NVIDIA), and Metal (Apple Silicon)
 
 ## Architecture Overview
 
 ```
 PyDotCompute Ring Kernel System
-├── Ring Kernels          │ Performance Tiers      │ CUDA Backend
-│   • RingKernelRuntime   │ • uvloop (21μs)        │ • Numba JIT
-│   • FastMessageQueue    │ • ThreadedRingKernel   │ • CuPy arrays
-│   • @ring_kernel        │ • CythonRingKernel     │ • Zero-copy DMA
-│   • @message            │ • FastSPSCQueue        │ • PTX caching
+├── Ring Kernels          │ Performance Tiers      │ GPU Backends
+│   • RingKernelRuntime   │ • uvloop (21μs)        │ CUDA:
+│   • FastMessageQueue    │ • ThreadedRingKernel   │ • Numba JIT, CuPy arrays
+│   • @ring_kernel        │ • CythonRingKernel     │ • Zero-copy DMA, PTX caching
+│   • @message            │ • FastSPSCQueue        │ Metal (macOS):
+│                         │                        │ • MLX, Unified memory
 ├─────────────────────────┴────────────────────────┴─────────────────
-│ Memory: UnifiedBuffer, MemoryPool, Accelerator
+│ Memory: UnifiedBuffer (.host, .device, .metal), MemoryPool, Accelerator
 ```
 
 ## Installation
@@ -138,6 +139,14 @@ PyDotCompute Ring Kernel System
     ```bash
     pip install pydotcompute[cuda,fast]
     ```
+
+=== "With Metal support (macOS)"
+
+    ```bash
+    pip install pydotcompute[metal,fast]
+    ```
+
+    GPU acceleration on Apple Silicon using MLX.
 
 === "Development"
 
